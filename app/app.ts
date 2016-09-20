@@ -3,14 +3,21 @@ import { ionicBootstrap, Platform, Nav } from 'ionic-angular';
 import { StatusBar } from 'ionic-native';
 
 import { Backand } from './services/backand';
+import { provideCloud, CloudSettings, Deploy } from '@ionic/cloud-angular';
+//import { Deploy } from '@ionic/cloud-angular';
 
 import { Page1 } from './pages/page1/page1';
 import { Page2 } from './pages/page2/page2';
 
+const cloudSettings: CloudSettings = {
+  'core': {
+    'app_id': 'b3efcabc'
+  }
+};
 
 @Component({
   templateUrl: 'build/app.html',
-  providers: [Backand]
+  providers: [Backand] //, Deploy]
 })
 class MyApp {
   @ViewChild(Nav) nav: Nav;
@@ -45,4 +52,4 @@ class MyApp {
   }
 }
 
-ionicBootstrap(MyApp);
+ionicBootstrap(MyApp, [provideCloud(cloudSettings)]);
