@@ -28,18 +28,25 @@ export class Page1 {
     this.deploy.check().then((snapshotAvailable: boolean) => {
       // When snapshotAvailable is true, you can apply the snapshot
       this.toastThis('snapshotAvailable ' + snapshotAvailable);
-      this.deploy.download().then(() => {
-        this.toastThis('downloaded');
-        return this.deploy.extract().then(() => {
-          this.toastThis('extracted. loading....')
-          this.deploy.load();
-        });
-      });
+      if (snapshotAvailable) this.doUpdate();
+      else this.toastThis('software up to date :)');
     }, reason => {
       this.toastThis('rejected ' + reason);
     });
 
     this.init();
+  }
+
+  private doUpdate() {
+    this.deploy.download().then(() => {
+      this.toastThis('downloaded');
+
+      return this.deploy.extract().then(() => {
+        this.toastThis('extracted. loading....')
+        this.deploy.load();
+      });
+
+    });
   }
 
   private init() {
