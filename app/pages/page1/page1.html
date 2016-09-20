@@ -18,4 +18,16 @@
 
   <button secondary menuToggle>Toggle Menu</button>
 
+  <button secondary (click)="addTodo($event)">Add</button>
+
+  <ion-list>
+    <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
+      <!--<ion-icon [name]="item.icon" item-left></ion-icon>
+      {{item.name}}-->
+      <div class="item-note" item-right>
+        {{item.name}}
+      </div>
+    </button>
+  </ion-list>
+
 </ion-content>
