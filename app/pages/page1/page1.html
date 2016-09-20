@@ -12,20 +12,17 @@
 
   <h3>Ionic Menu Starter 2</h3>
 
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will show you the way.
-  </p>
-
-  <button secondary menuToggle>Toggle Menu</button>
-
-  <button secondary (click)="addTodo($event)">Add</button>
+  <div padding>
+    <button secondary menuToggle>Toggle Menu</button>
+    <button secondary (click)="addTodo($event)">Add</button>
+    <button secondary (click)="checkForUpdate($event)">Check for Update</button>
+  </div>
 
   <ion-list>
     <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
-      <!--<ion-icon [name]="item.icon" item-left></ion-icon>
-      {{item.name}}-->
-      <div class="item-note" item-right>
         {{item.name}}
+      <div class="item-note" item-right>
+        {{item.id}}
       </div>
     </button>
   </ion-list>
