@@ -1,13 +1,21 @@
+// Angular
 import { Component, ViewChild } from '@angular/core';
+
+// Ionic 
 import { ionicBootstrap, Platform, Nav } from 'ionic-angular';
 import { StatusBar } from 'ionic-native';
-
-import { Backand } from './services/backand';
 import { provideCloud, CloudSettings, Deploy } from '@ionic/cloud-angular';
-//import { Deploy } from '@ionic/cloud-angular';
 
+// My Services
+import { Backand } from './services/backand.service';
+import { UpdateService } from './services/update.service';
+import { LogService } from './services/log.service';
+import { SettingsService } from './services/settings.service';
+
+// My Pages
 import { Page1 } from './pages/page1/page1';
 import { Page2 } from './pages/page2/page2';
+import { SystemPage } from './pages/system-page/system.page';
 
 const cloudSettings: CloudSettings = {
   'core': {
@@ -17,12 +25,13 @@ const cloudSettings: CloudSettings = {
 
 @Component({
   templateUrl: 'build/app.html',
-  providers: [Backand] //, Deploy]
+  // Injectable providers
+  providers: [Backand, UpdateService, LogService, SettingsService]
 })
 class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = Page1;
+  rootPage: any = SystemPage;
 
   pages: Array<{title: string, component: any}>;
 
@@ -31,8 +40,9 @@ class MyApp {
 
     // used for an example of ngFor and navigation
     this.pages = [
+      { title: 'System', component: SystemPage },
       { title: 'Page uno', component: Page1 },
-      { title: 'Page dos', component: Page2 }
+      { title: 'Page dos', component: Page2 },
     ];
 
   }

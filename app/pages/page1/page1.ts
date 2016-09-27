@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { Backand } from '../../services/backand';
-import { Deploy } from '@ionic/cloud-angular';
+import { Backand } from '../../services/backand.service';
 import { ToastController } from 'ionic-angular';
 
 @Component({
@@ -11,21 +10,11 @@ export class Page1 {
 
   public items: any[];
 
-  constructor(public navCtrl: NavController, public BK: Backand, private deploy: Deploy, public toastCtrl: ToastController) {
+  constructor(public navCtrl: NavController, public BK: Backand, public toastCtrl: ToastController) {
     this.init();
   }
 
-  private doUpdate() {
-    this.deploy.download().then(() => {
-      this.toastThis('downloaded');
-
-      return this.deploy.extract().then(() => {
-        this.toastThis('extracted. loading....')
-        this.deploy.load();
-      });
-
-    });
-  }
+  
 
   private init() {
     this.BK.getTodos().subscribe(
@@ -48,21 +37,6 @@ export class Page1 {
       err => console.error(err)
     );
   }
-
-  public checkForUpdate() {
-    this.deploy.check().then((snapshotAvailable: boolean) => {
-
-      // When snapshotAvailable is true, you can apply the snapshot
-      if (snapshotAvailable) { 
-        this.toastThis('new version available. One moment...')
-        this.doUpdate();
-      }
-      else this.toastThis('software up to date :)');
-    }, reason => {
-      this.toastThis('rejected ' + reason);
-    });
-  }
-
 
   private toastThis(msg: string) {
     console.log(msg);

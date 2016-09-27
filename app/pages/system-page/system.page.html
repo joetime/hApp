@@ -1,0 +1,45 @@
+<ion-header>
+    <ion-navbar>
+        <button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+        <ion-title>System</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding class="systemPage">
+    <h1> System </h1>
+    <ion-list>
+        <!-- Software Update-->
+        <ion-item>
+            <span (click)="showUpdateDetails=!showUpdateDetails">Software Updates</span>
+
+            <div *ngIf="showUpdateDetails">
+                checkedForUpdate={{checkedForUpdate}}<br /> needsUpdate={{needsUpdate}}
+                <br /> deployNotAvailable={{deployNotAvailable}}
+            </div>
+
+            <span item-right>
+                <!--<span *ngIf="!checkedForUpdate">click to check for updates</span>-->
+            <span *ngIf="checkedForUpdate && needsUpdate">Update available!</span>
+            <span *ngIf="checkedForUpdate && !needsUpdate && !deployNotAvailable">Software is up to date :)</span>
+            <span *ngIf="checkedForUpdate && deployNotAvailable">Update service not available</span>
+
+            <ion-spinner *ngIf="checking"></ion-spinner>
+            <button *ngIf="!checking && !checkedForUpdate" primary (click)="checkForUpdate_Click($event)">Check for Update</button>
+            <button *ngIf="needsUpdate" secondary (click)="doUpdate($event)">Update software</button>
+            </span>
+        </ion-item>
+        <ion-item>
+            Log test
+            <span item-right>
+                <span *ngIf="logSuccess">Log success!</span>
+            <span *ngIf="logFail">Log fail :(</span>
+
+            <ion-spinner *ngIf="testingLog"></ion-spinner>
+            <button *ngIf="!testingLog" primary (click)="testLog_Click($event)">Test Log</button>
+            </span>
+        </ion-item>
+    </ion-list>
+
+</ion-content>
