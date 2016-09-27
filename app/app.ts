@@ -5,17 +5,20 @@ import { Component, ViewChild } from '@angular/core';
 import { ionicBootstrap, Platform, Nav } from 'ionic-angular';
 import { StatusBar } from 'ionic-native';
 import { provideCloud, CloudSettings, Deploy } from '@ionic/cloud-angular';
+import { Geolocation } from 'ionic-native';
 
 // My Services
 import { Backand } from './services/backand.service';
 import { UpdateService } from './services/update.service';
 import { LogService } from './services/log.service';
 import { SettingsService } from './services/settings.service';
+import { LocationService } from './services/location.service';
 
 // My Pages
 import { Page1 } from './pages/page1/page1';
 import { Page2 } from './pages/page2/page2';
 import { SystemPage } from './pages/system-page/system.page';
+
 
 const cloudSettings: CloudSettings = {
   'core': {
@@ -26,7 +29,14 @@ const cloudSettings: CloudSettings = {
 @Component({
   templateUrl: 'build/app.html',
   // Injectable providers
-  providers: [Backand, UpdateService, LogService, SettingsService]
+  providers: [
+    Geolocation, 
+    LocationService, 
+    Backand, 
+    UpdateService, 
+    LogService, 
+    SettingsService
+    ]
 })
 class MyApp {
   @ViewChild(Nav) nav: Nav;

@@ -1,21 +1,50 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-
 import { ToastController } from 'ionic-angular';
 
-import { UpdateService } from '../../services/update.service'
-import { LogService } from '../../services/log.service'
+import { UpdateService } from '../../services/update.service';
+import { LogService } from '../../services/log.service';
+import { LocationService } from '../../services/location.service';
 
 @Component({
   templateUrl: 'build/pages/system-page/system.page.html'
 })
 export class SystemPage {
 
-    constructor (private updateService: UpdateService, private logService: LogService) {}
+    constructor (private updateService: UpdateService, private logService: LogService, private locationService: LocationService) {}
 
     // for debug
     private testUpdate: Boolean = false;
     
+    //# Geolocation
+    //UI flags
+    public gettingLocation = false;
+    public locationSuccess = false;
+    public locationFail = false;
+    public locationString: any = {};
+    // Actions
+    public testLocation_Click() {
+        console.log('testLocation_Click() resp =>'); 
+        
+        this.locationSuccess = false;
+        this.locationFail = false;
+        this.locationString = "";
+        this.gettingLocation = true;
+
+        this.locationService.getCurrentPosition().then((resp) => { 
+            console.log('testLocation_Click() resp =>', resp);
+            this.gettingLocation = false;
+            this.locationSuccess = true;
+            this.locationString = resp.coords.latitude + ", " + resp.coords.longitude + ". acc:" + resp.coords.accuracy;
+            
+        }, (err) => {
+            console.error('testLocation_Click() err =>', err);
+            this.gettingLocation = false;         
+            this.locationFail = true;   
+        });
+    }
+
+
     //## Logs
     // UI flags
     public testingLog: Boolean = false;
