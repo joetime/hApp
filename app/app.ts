@@ -1,6 +1,7 @@
 // Angular
-import { Component, ViewChild, ExceptionHandler, Injectable, provide } from '@angular/core';
+import { Component, ViewChild, ExceptionHandler, Injectable, provide, NgZone } from '@angular/core';
 import { Response } from '@angular/http';
+//import { NgModule } from '@angular/core'
 
 // Ionic 
 import { ionicBootstrap, Platform, Nav } from 'ionic-angular';
@@ -19,11 +20,15 @@ import { CameraService } from './services/camera.service';
 import { AppExceptionHandler } from './services/exception.service';
 import { Toast } from './services/toast.service';
 
+// Components
+import { ItemForm } from './components/item-form/item-form.directive';
+
 // My Pages
 import { Page1 } from './pages/page1/page1';
 import { Page2 } from './pages/page2/page2';
 import { SystemPage } from './pages/system-page/system.page';
 import { LogsPage } from './pages/logs-page/logs.page';
+import { MapPage } from './pages/map-page/map.page';
 
 // Cloud settings (used by the deploy service for updating software on device)
 const cloudSettings: CloudSettings = {
@@ -34,6 +39,7 @@ const cloudSettings: CloudSettings = {
 
 @Component({
   templateUrl: 'build/app.html',
+  directives: [ ItemForm ],
   // Injectable providers
   providers: [
     Geolocation,
@@ -45,12 +51,13 @@ const cloudSettings: CloudSettings = {
     LogService, 
     SettingsService,
     Toast
-    ]
+    ],
+    
 })
 class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = SystemPage;
+  rootPage: any = MapPage;
 
   pages: Array<{title: string, component: any}>;
 
@@ -62,6 +69,7 @@ class MyApp {
     // used for an example of ngFor and navigation
     this.pages = [
       { title: 'System', component: SystemPage },
+      { title: 'Map', component: MapPage },
       { title: 'Logs', component: LogsPage },
       { title: 'Page uno', component: Page1 },
       { title: 'Page dos', component: Page2 },

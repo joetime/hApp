@@ -1,0 +1,49 @@
+<ion-header>
+    <ion-navbar>
+        <button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+        <ion-title>Map</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content class="map-page">
+
+    <ion-grid id="map-grid">
+        <ion-row id="map-row">
+            <ion-col width-67 id="map-col">
+                <div #map id="map"></div>
+            </ion-col>
+
+            <ion-col width-33>
+                <ion-list>
+                    <ion-list-header>
+                        {{markersList.length}} Items
+                    </ion-list-header>
+
+                    <!-- ITEMS -->
+                    <ion-item-sliding *ngFor="let m of markersList; let i = index">
+                        <ion-item>
+                            [{{i}}] {{m.id}}
+                        </ion-item>
+                        <ion-item-options>
+                            <button danger (click)="deleteMarker_Click()">Delete</button>
+                        </ion-item-options>
+                    </ion-item-sliding>
+
+                    <!-- FORM -->
+                    <item-form></item-form>
+
+                </ion-list>
+
+                <div padding id="add-bar">
+                    <button primary (click)="addMarker_Click()">Marker</button>
+                    <button primary (click)="addPolyline_Click()">Polyline</button>
+                    <button primary (click)="addPolygon_Click()">Area</button>
+                </div>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+
+</ion-content>

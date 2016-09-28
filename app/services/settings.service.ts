@@ -16,4 +16,7 @@ export class SettingsService {
     // Geolocation
     public GeolocationTimeout = 10000;
 
+    // Google Maps
+    public mapDefaultZoom = 17;
+
 }
