@@ -6,6 +6,9 @@ export class PavingItem {
         public id: number,
         public name: string,
         public critical: boolean,
-        public type?: string
+        public type: string,
+
+        public comments: string
+        
     ) {}
 }

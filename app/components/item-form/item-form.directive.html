@@ -1,3 +1,42 @@
-<div class="item-form">
-    <h2>Item Form!</h2>
+<div class="item-form" padding>
+    <h3>Edit Item</h3>
+
+    <form>
+        <ion-list>
+
+            <!-- Name -->
+            <ion-item>
+                <ion-label stacked for="name">Name</ion-label>
+                <ion-input type="text" id="name" name="name" [(ngModel)]="model.name" clearInput required></ion-input>
+            </ion-item>
+
+            <!-- Type (Select)-->
+            <ion-item>
+                <ion-label stacked for="type">Select Type</ion-label>
+                <ion-select id="type" name="type" [(ngModel)]="model.type" multiple required>
+                    <ion-option *ngFor="let t of types" [value]="t">{{t}}</ion-option>
+                </ion-select>
+            </ion-item>
+
+            <!-- Critical (toggle) -->
+            <ion-item>
+                <ion-label for="critical"> Critical</ion-label>
+                <ion-toggle danger [(ngModel)]="model.critical" checked="false" name="critical" id="critical"></ion-toggle>
+            </ion-item>
+
+            <!-- Comments -->
+            <ion-item>
+                <ion-label stacked for="comments">Comments</ion-label>
+                <ion-input type="text" id="comments" name="comments" [(ngModel)]="model.comments"></ion-input>
+            </ion-item>
+
+        </ion-list>
+
+        <button primary type="submit">Submit</button><button primary danger type="button">Delete</button>
+
+
+    </form>
+    <div padding class="debug">
+        {{diagnostic}}
+    </div>
 </div>

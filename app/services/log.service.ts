@@ -7,25 +7,25 @@ import { Backand } from './backand.service';
 export class LogService {
 
     constructor(private BK: Backand) {
+        console.info('LogService constructor()');
     }
 
     public log(msg, obj, error = false): Promise<any> {
         
-        console.log('LogService log()');
+        //console.log('LogService log()');
 
-        //return //new Promise<any>((resolve, reject) => {
-            if (obj === undefined || obj === null) {
-                // just a simple console log
-                if (error) console.error(msg) 
-                else console.log(msg);
-                return this.BK.log(msg, null, "", error); 
-            }
-            else {
-                if (error) console.error(msg, obj); 
-                else console.log(msg, obj);
-                return this.BK.log(msg, obj, "", error);
-            }
-        //})
+        if (obj === undefined || obj === null) {
+            // just a simple console log
+            if (error) console.error(msg) 
+            else console.info(msg);
+            return this.BK.log(msg, null, "", error); 
+        }
+        else {
+            if (error) console.error(msg, obj); 
+            else console.log(msg, obj);
+            return this.BK.log(msg, obj, "", error);
+        }
+    
     }
     
     public error(msg, obj):Promise<any> {

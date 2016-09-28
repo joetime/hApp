@@ -50,7 +50,7 @@ export class Backand {
 
   // actual call to service
   private addLog(msg: string, obj: any, src: string, isError: Boolean) {
-    console.log('Backand addLog()')
+    //console.log('Backand addLog()')
 
     if (typeof(obj) == 'object') {
       obj = JSON.stringify(obj);
@@ -63,19 +63,19 @@ export class Backand {
       headers: this.authHeader() 
     })
     .map(res => {
-      console.log('Backand addLog() res =>', res);
+      //console.log('Backand addLog() res =>', res);
       return res.json();
     });
   }
 
   // wrapper - delays call by 3 seconds
   public log(msg: string, obj: any = "", src: string = "", isError: Boolean = false): Promise<any> {
-    console.log('Backand log()');
+    //console.log('Backand log()');
     
     return new Promise<any>((resolve, reject) => {
       setTimeout(() => { 
         this.addLog(msg, obj, src, isError).subscribe((res) => {
-          console.log('Backand log resolve');
+          //console.log('Backand log resolve');
           resolve(res);
         }); 
         }, this.settings.logDelay)

@@ -1,7 +1,5 @@
 // Angular
-import { Component, ViewChild, ExceptionHandler, Injectable, provide, NgZone } from '@angular/core';
-import { Response } from '@angular/http';
-//import { NgModule } from '@angular/core'
+import { Component, ViewChild, ExceptionHandler, Injectable, provide } from '@angular/core';
 
 // Ionic 
 import { ionicBootstrap, Platform, Nav } from 'ionic-angular';
@@ -20,7 +18,7 @@ import { CameraService } from './services/camera.service';
 import { AppExceptionHandler } from './services/exception.service';
 import { Toast } from './services/toast.service';
 
-// Components
+// Components/Directives
 import { ItemForm } from './components/item-form/item-form.directive';
 
 // My Pages
@@ -29,13 +27,6 @@ import { Page2 } from './pages/page2/page2';
 import { SystemPage } from './pages/system-page/system.page';
 import { LogsPage } from './pages/logs-page/logs.page';
 import { MapPage } from './pages/map-page/map.page';
-
-// Cloud settings (used by the deploy service for updating software on device)
-const cloudSettings: CloudSettings = {
-  'core': {
-    'app_id': 'b3efcabc'
-  }
-};
 
 @Component({
   templateUrl: 'build/app.html',
@@ -91,6 +82,13 @@ class MyApp {
     this.nav.setRoot(page.component);
   }
 }
+
+// Cloud settings (used by the deploy service for updating software on device)
+const cloudSettings: CloudSettings = {
+  'core': {
+    'app_id': 'b3efcabc'
+  }
+};
 
 let _bypassExceptionHandler = false;
 if (_bypassExceptionHandler) {

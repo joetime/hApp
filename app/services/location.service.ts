@@ -17,7 +17,7 @@ export class LocationService {
 
             Geolocation.getCurrentPosition().then((resp) => {
                 this.LOG.log('LocationService getCurrentPosition() =>', resp);
-                console.log(resp);
+                //console.log(resp);
                 resolve(resp);
                 resolved = true;
             }, (err) => {
