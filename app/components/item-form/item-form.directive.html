@@ -1,5 +1,5 @@
 <div class="item-form" padding>
-    <h3>Edit Item</h3>
+    <h3>{{model.name}}&nbsp;</h3>
 
     <form>
         <ion-list>
@@ -30,7 +30,18 @@
                 <ion-input type="text" id="comments" name="comments" [(ngModel)]="model.comments"></ion-input>
             </ion-item>
 
+            <!-- Photos -->
+            <ion-item>
+                <img width="30%" src="http://placehold.it/100x100" id="image1" (click)="thumbnail_Click($event)" />
+                <img width="30%" src="http://placehold.it/100x100" id="image2" (click)="thumbnail_Click($event)" />
+                <img width="30%" src="http://placehold.it/100x100" id="image3" (click)="thumbnail_Click($event)" />
+            </ion-item>
+
         </ion-list>
+
+
+
+
 
         <button primary type="submit">Submit</button><button primary danger type="button">Delete</button>
 
