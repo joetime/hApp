@@ -1,0 +1,31 @@
+<ion-header>
+    <ion-navbar>
+        <button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+        <ion-title>Logs</ion-title>
+    </ion-navbar>
+</ion-header>
+
+
+<ion-content padding class="logsPage">
+
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+    <h3>Logs</h3>
+
+    <ion-list>
+        <span ion-item *ngFor="let l of logsList">
+            <ion-icon *ngIf="l.isError" danger name="alert"></ion-icon>
+            <ion-icon *ngIf="!l.isError" name="arrow-dropright"></ion-icon>
+
+           {{l.msg}}  
+           <span *ngIf="l.obj != '{}'"><br />{{l.obj}}</span>
+
+        <span item-right>({{l.id}}) {{l.timeStamp}}</span>
+        </span>
+    </ion-list>
+
+</ion-content>

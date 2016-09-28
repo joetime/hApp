@@ -6,7 +6,14 @@ export class SettingsService {
 
     constructor() {}
 
-    public logDelay: number = 3000;
+    // Deploy
     public updateServiceTimeout = 5000;
+
+    // Log
+    public logDelay: number = 3000;
+    public logsPageSize = 50;
+
+    // Geolocation
+    public GeolocationTimeout = 10000;
 
 }

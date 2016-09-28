@@ -18,12 +18,12 @@ export class LogService {
                 // just a simple console log
                 if (error) console.error(msg) 
                 else console.log(msg);
-                return this.BK.log(msg); 
+                return this.BK.log(msg, null, "", error); 
             }
             else {
                 if (error) console.error(msg, obj); 
                 else console.log(msg, obj);
-                return this.BK.log(msg, obj);
+                return this.BK.log(msg, obj, "", error);
             }
         //})
     }

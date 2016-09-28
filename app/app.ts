@@ -6,6 +6,7 @@ import { ionicBootstrap, Platform, Nav } from 'ionic-angular';
 import { StatusBar } from 'ionic-native';
 import { provideCloud, CloudSettings, Deploy } from '@ionic/cloud-angular';
 import { Geolocation } from 'ionic-native';
+import { Camera } from 'ionic-native';
 
 // My Services
 import { Backand } from './services/backand.service';
@@ -13,13 +14,16 @@ import { UpdateService } from './services/update.service';
 import { LogService } from './services/log.service';
 import { SettingsService } from './services/settings.service';
 import { LocationService } from './services/location.service';
+import { CameraService } from './services/camera.service';
+ 
 
 // My Pages
 import { Page1 } from './pages/page1/page1';
 import { Page2 } from './pages/page2/page2';
 import { SystemPage } from './pages/system-page/system.page';
+import { LogsPage } from './pages/logs-page/logs.page';
 
-
+// Cloud settings (used by the deploy service for updating software on device)
 const cloudSettings: CloudSettings = {
   'core': {
     'app_id': 'b3efcabc'
@@ -30,7 +34,9 @@ const cloudSettings: CloudSettings = {
   templateUrl: 'build/app.html',
   // Injectable providers
   providers: [
-    Geolocation, 
+    Geolocation,
+    Camera, 
+    CameraService,
     LocationService, 
     Backand, 
     UpdateService, 
@@ -51,6 +57,7 @@ class MyApp {
     // used for an example of ngFor and navigation
     this.pages = [
       { title: 'System', component: SystemPage },
+      { title: 'Logs', component: LogsPage },
       { title: 'Page uno', component: Page1 },
       { title: 'Page dos', component: Page2 },
     ];

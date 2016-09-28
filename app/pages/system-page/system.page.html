@@ -50,6 +50,18 @@
             <button *ngIf="!gettingLocation" primary (click)="testLocation_Click($event)">Test Location</button>
             </span>
         </ion-item>
+        <ion-item>
+            Camera Test
+            <span item-right>
+                <span *ngIf="pictureSuccess">Camera success</span>
+            <span *ngIf="pictureFail">Camera fail :(</span>
+            <span *ngIf="cameraNotAvailable">Camera not availble on this device.</span>
+            <img *ngIf="pictureSuccess" src="{{base64Image}}" />
+
+            <ion-spinner *ngIf="gettingPicture"></ion-spinner>
+            <button *ngIf="!gettingPicture" primary (click)="testCamera_Click($event)">Test Camera</button>
+            </span>
+        </ion-item>
     </ion-list>
 
 </ion-content>

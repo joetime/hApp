@@ -5,17 +5,64 @@ import { ToastController } from 'ionic-angular';
 import { UpdateService } from '../../services/update.service';
 import { LogService } from '../../services/log.service';
 import { LocationService } from '../../services/location.service';
+import { CameraService } from '../../services/camera.service';
 
 @Component({
   templateUrl: 'build/pages/system-page/system.page.html'
 })
 export class SystemPage {
 
-    constructor (private updateService: UpdateService, private logService: LogService, private locationService: LocationService) {}
+    constructor (
+        private updateService: UpdateService, 
+        private logService: LogService, 
+        private locationService: LocationService,
+        private cameraService: CameraService) {}
 
     // for debug
     private testUpdate: Boolean = false;
     
+    //# Camera
+    //UI flags
+    public gettingPicture = false;
+    public pictureSuccess = false;
+    public cameraNotAvailable = false;
+    public pictureFail = false;
+    public pictureData: any = {};
+    public base64Image;
+    // Actions
+    public testCamera_Click() {
+        console.info('testCamera_Click()'); 
+        
+        this.pictureSuccess = false;
+        this.pictureFail = false;
+        this.cameraNotAvailable = false;
+        this.pictureData = "";
+        this.gettingPicture = true;
+
+        this.cameraService.getPicture().then((imageData) => { 
+            console.log('testCamera_Click() resp =>', imageData);
+            this.gettingPicture = false;
+            this.pictureSuccess = true; 
+            this.pictureData = imageData;
+            this.base64Image = 'data:image/jpeg;base64,' + imageData;
+            
+        }, (err) => {
+            
+            if (err == "cordova_not_available") {
+                this.cameraNotAvailable = true;
+            }
+            else {
+                console.error('testCamera_Click() err =>', err);      
+                this.pictureFail = true;
+            }
+            this.gettingPicture = false;   
+        });
+    }
+
+
+
+
+
     //# Geolocation
     //UI flags
     public gettingLocation = false;
@@ -24,7 +71,7 @@ export class SystemPage {
     public locationString: any = {};
     // Actions
     public testLocation_Click() {
-        console.log('testLocation_Click() resp =>'); 
+        console.info('testLocation_Click()'); 
         
         this.locationSuccess = false;
         this.locationFail = false;

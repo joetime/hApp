@@ -24,6 +24,16 @@ export class Backand {
     .map(res => res.json())
   }
 
+  public getLogs() {
+    // sort desc
+    let sort = [{    "fieldName": "id",    "order": "desc"  }];
+    
+    return this.http.get(this.api_url + '/1/objects/logs?returnObject=true&pageSize=50&sort=' + JSON.stringify(sort), {
+      headers: this.authHeader()
+    })
+    .map(res => res.json())
+  }
+
   public addTodo(name: string) {
     console.log('Backand addTodo()', name);
 
