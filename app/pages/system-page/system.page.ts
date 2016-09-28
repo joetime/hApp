@@ -21,6 +21,13 @@ export class SystemPage {
     // for debug
     private testUpdate: Boolean = false;
     
+    //# ExceptionHandler
+    public testExceptionHandler_Click() {
+        throw('test');
+    }
+
+
+
     //# Camera
     //UI flags
     public gettingPicture = false;

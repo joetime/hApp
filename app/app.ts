@@ -1,5 +1,6 @@
 // Angular
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ExceptionHandler, Injectable, provide } from '@angular/core';
+import { Response } from '@angular/http';
 
 // Ionic 
 import { ionicBootstrap, Platform, Nav } from 'ionic-angular';
@@ -7,6 +8,7 @@ import { StatusBar } from 'ionic-native';
 import { provideCloud, CloudSettings, Deploy } from '@ionic/cloud-angular';
 import { Geolocation } from 'ionic-native';
 import { Camera } from 'ionic-native';
+//import { ToastController } from 'ionic-angular';
 
 // My Services
 import { Backand } from './services/backand.service';
@@ -15,7 +17,7 @@ import { LogService } from './services/log.service';
 import { SettingsService } from './services/settings.service';
 import { LocationService } from './services/location.service';
 import { CameraService } from './services/camera.service';
- 
+import { AppExceptionHandler } from './services/exception.service';
 
 // My Pages
 import { Page1 } from './pages/page1/page1';
@@ -79,4 +81,6 @@ class MyApp {
   }
 }
 
-ionicBootstrap(MyApp, [provideCloud(cloudSettings)]);
+
+// override with custom AppExceptionHandler
+ionicBootstrap(MyApp, [provide(ExceptionHandler, { useClass: AppExceptionHandler }), provideCloud(cloudSettings)]);

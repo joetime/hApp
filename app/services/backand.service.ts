@@ -6,7 +6,7 @@ import { SettingsService } from './settings.service'; //private settings:Setting
 @Injectable()
 export class Backand {
   auth_token: {header_name: string, header_value: string} = {header_name: 'AnonymousToken', header_value: 'f53fd52e-dec6-41c8-93b4-daef813ebdbe'};
-  api_url: string = 'https://api.backand.com';
+  api_url: string = 'https://api.backand.com'; // /1/objects/logs
   app_name: string = 'acgo';
 
   constructor(public http: Http, private settings:SettingsService) {}
