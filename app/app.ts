@@ -8,7 +8,6 @@ import { StatusBar } from 'ionic-native';
 import { provideCloud, CloudSettings, Deploy } from '@ionic/cloud-angular';
 import { Geolocation } from 'ionic-native';
 import { Camera } from 'ionic-native';
-//import { ToastController } from 'ionic-angular';
 
 // My Services
 import { Backand } from './services/backand.service';
@@ -18,6 +17,7 @@ import { SettingsService } from './services/settings.service';
 import { LocationService } from './services/location.service';
 import { CameraService } from './services/camera.service';
 import { AppExceptionHandler } from './services/exception.service';
+import { Toast } from './services/toast.service';
 
 // My Pages
 import { Page1 } from './pages/page1/page1';
@@ -43,7 +43,8 @@ const cloudSettings: CloudSettings = {
     Backand, 
     UpdateService, 
     LogService, 
-    SettingsService
+    SettingsService,
+    Toast
     ]
 })
 class MyApp {
@@ -53,8 +54,10 @@ class MyApp {
 
   pages: Array<{title: string, component: any}>;
 
-  constructor(public platform: Platform) {
+  constructor(public platform: Platform, private LOG:LogService) {
     this.initializeApp();
+
+    this.LOG.log('NEW SESSION', null);
 
     // used for an example of ngFor and navigation
     this.pages = [
@@ -81,6 +84,12 @@ class MyApp {
   }
 }
 
+let _bypassExceptionHandler = false;
+if (_bypassExceptionHandler) {
 
-// override with custom AppExceptionHandler
-ionicBootstrap(MyApp, [provide(ExceptionHandler, { useClass: AppExceptionHandler }), provideCloud(cloudSettings)]);
+  ionicBootstrap(MyApp, [provideCloud(cloudSettings)]);
+} else {
+  // override with custom AppExceptionHandler
+  ionicBootstrap(MyApp, [provide(ExceptionHandler, { useClass: AppExceptionHandler }), provideCloud(cloudSettings)]);
+
+}

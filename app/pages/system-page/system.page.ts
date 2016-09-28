@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { ToastController } from 'ionic-angular';
 
 import { UpdateService } from '../../services/update.service';
 import { LogService } from '../../services/log.service';
 import { LocationService } from '../../services/location.service';
 import { CameraService } from '../../services/camera.service';
+import { Toast } from '../../services/toast.service';
+
 
 @Component({
   templateUrl: 'build/pages/system-page/system.page.html'
@@ -16,17 +17,20 @@ export class SystemPage {
         private updateService: UpdateService, 
         private logService: LogService, 
         private locationService: LocationService,
-        private cameraService: CameraService) {}
+        private cameraService: CameraService,
+        private Toast: Toast) {}
 
     // for debug
     private testUpdate: Boolean = false;
     
     //# ExceptionHandler
-    public testExceptionHandler_Click() {
-        throw('test');
+    public testExceptionHandler_Click(ev, nothingHere) {
+        try {
+            nothingHere.notAFunction();
+        } catch (ex) {
+            this.Toast.toast('exception caught:' + ex);
+        }
     }
-
-
 
     //# Camera
     //UI flags
@@ -52,7 +56,7 @@ export class SystemPage {
             this.pictureSuccess = true; 
             this.pictureData = imageData;
             this.base64Image = 'data:image/jpeg;base64,' + imageData;
-            
+
         }, (err) => {
             
             if (err == "cordova_not_available") {

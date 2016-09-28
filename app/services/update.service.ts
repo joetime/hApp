@@ -7,7 +7,7 @@ export class UpdateService {
 
     constructor(private deploy: Deploy, private settings:SettingsService) {
         console.log('UpdateService constructor()')
-        deploy.getMetadata().then((val) => console.log(val));
+        //deploy.getMetadata().then((val) => console.log(val));
     }
 
     // check for update 
