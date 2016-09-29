@@ -1,7 +1,11 @@
 import { Component, Input, Directive } from '@angular/core';
-import { PavingItem } from '../../models/item.model';
+import { PopoverController } from 'ionic-angular';
+
+import { PavingItemModel } from '../../models/item.model';
 import { CameraService } from '../../services/camera.service';
 import { Toast } from '../../services/toast.service';
+import { OptionsService } from '../../services/options.service';
+import { CommService } from '../../services/comm.service';
 
 @Component({
     //moduleId: 'someId',
@@ -12,13 +16,20 @@ export class ItemForm {
 
     constructor(
         private camera:CameraService, 
-        private T: Toast) {
+        private T: Toast,
+        public popoverCtrl: PopoverController,
+        public Options: OptionsService, 
+        private Comm: CommService) {
 
-        console.info('ItemForm constructor')
+        console.info('ItemForm constructor');
     }
+    public model: PavingItemModel = this.Comm.pavingItem;      // for the UI
+    
+
+    public idTypeOptions = this.Options.identificationTypeOptions;
 
     types = ['ADA', 'Repair', 'Maintenance', 'Other']
-    model = new PavingItem(1, "Test Item", false, "ADA", "comments...");
+    //model = new PavingItemModel();
     submitted = false;
 
     OnSubmit () { this.submitted = true; }

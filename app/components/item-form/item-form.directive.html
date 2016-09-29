@@ -1,5 +1,11 @@
 <div class="item-form" padding>
-    <h3>{{model.name}}&nbsp;</h3>
+
+    <!-- Photos -->
+    <ion-item>
+        <img width="30%" src="http://placehold.it/100x100" id="image1" (click)="thumbnail_Click($event)" />
+        <img width="30%" src="http://placehold.it/100x100" id="image2" (click)="thumbnail_Click($event)" />
+        <img width="30%" src="http://placehold.it/100x100" id="image3" (click)="thumbnail_Click($event)" />
+    </ion-item>
 
     <form>
         <ion-list>
@@ -12,9 +18,9 @@
 
             <!-- Type (Select)-->
             <ion-item>
-                <ion-label stacked for="type">Select Type</ion-label>
-                <ion-select id="type" name="type" [(ngModel)]="model.type" multiple required>
-                    <ion-option *ngFor="let t of types" [value]="t">{{t}}</ion-option>
+                <ion-label stacked for="identificationType">Select IdType</ion-label>
+                <ion-select id="identificationType" name="identificationType" [(ngModel)]="model.identificationType" required>
+                    <ion-option *ngFor="let t of Options.identificationTypeOptions" [value]="t">{{t}}</ion-option>
                 </ion-select>
             </ion-item>
 
@@ -24,18 +30,7 @@
                 <ion-toggle danger [(ngModel)]="model.critical" checked="false" name="critical" id="critical"></ion-toggle>
             </ion-item>
 
-            <!-- Comments -->
-            <ion-item>
-                <ion-label stacked for="comments">Comments</ion-label>
-                <ion-input type="text" id="comments" name="comments" [(ngModel)]="model.comments"></ion-input>
-            </ion-item>
 
-            <!-- Photos -->
-            <ion-item>
-                <img width="30%" src="http://placehold.it/100x100" id="image1" (click)="thumbnail_Click($event)" />
-                <img width="30%" src="http://placehold.it/100x100" id="image2" (click)="thumbnail_Click($event)" />
-                <img width="30%" src="http://placehold.it/100x100" id="image3" (click)="thumbnail_Click($event)" />
-            </ion-item>
 
         </ion-list>
 

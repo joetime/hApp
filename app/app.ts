@@ -1,5 +1,6 @@
 // Angular
 import { Component, ViewChild, ExceptionHandler, Injectable, provide } from '@angular/core';
+import { Form } from '@angular/forms';
 
 // Ionic 
 import { ionicBootstrap, Platform, Nav } from 'ionic-angular';
@@ -20,6 +21,8 @@ import { Toast } from './services/toast.service';
 import { CommService } from './services/comm.service';
 import { MapService } from './services/map.service';
 import { DrawingService } from './services/drawing.service';
+import { OptionsService } from './services/options.service';
+import { PavingItemModel } from './models/item.model';
 
 // Components/Directives
 import { ItemForm } from './components/item-form/item-form.directive';
@@ -50,7 +53,9 @@ import { HomePage } from './pages/home-page/home.page';
     CommService,
     MapPageState,
     MapService,
-    DrawingService
+    DrawingService,
+    OptionsService,
+    PavingItemModel,
     ],
     
 })

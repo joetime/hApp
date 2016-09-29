@@ -9,6 +9,7 @@ import { Toast } from '../../services/toast.service';
 import { CommService } from '../../services/comm.service';
 import { DrawingService } from '../../services/drawing.service';
 // Directive
+import { PavingItemModel } from '../../models/item.model';
 import { ItemForm } from '../../components/item-form/item-form.directive';
 
 // lets ts know we have a google variable
@@ -25,7 +26,8 @@ export class MapPage {
     MapPageMode = MapPageMode; // allows us to use enum in template
 
     @ViewChild('map') mapElement: ElementRef;
-    
+    public editItem: any; // passed to form
+
     map: any;
     mapOptions: any;
     mapLoading: boolean = false;
@@ -38,7 +40,8 @@ export class MapPage {
         private SETTINGS: SettingsService,
         private T: Toast,
         private Comm: CommService,
-        private Drawing: DrawingService) {
+        private Drawing: DrawingService,
+        private PavingItem: PavingItemModel) {
         
         console.info('MapPage constructor. initialized =', this.STATE.initialized);
         // ionViewLoaded() will fire as well.
@@ -122,10 +125,17 @@ export class MapPage {
         // listen for changes to the center, and store that value in the MapPageState
         google.maps.event.addListener(this.map, 'bounds_changed', () => this.onBoundsChanged(this));
 
+        // a click listener we can reuse for editing shapes
+        // google.maps.event.addListener(this.map, 'click', this.onMapClick);
+
         // re-draw makers from STATE
         this.restoreShapes();
 
         this.mapLoading = false;
+    }
+
+    private onMapClick() {
+
     }
 
     // when map bounds change, save the values in the STATE
@@ -145,9 +155,13 @@ export class MapPage {
         console.info('MapPage addMarker()')
 
         try {
-            let marker = this.Drawing.GetNewMarker(this.map);
+            let marker = DrawingService.GetMarker(this.map);
 
-            marker.id = "." + new Date();
+            marker.acgoData = new PavingItemModel();
+            marker.acgoData.name = "Marker"
+            marker.acgoData.drawingType = "Marker"
+            this.Comm.setPavingItem(marker.acgoData); // send to comm!
+
             this.STATE.markersList.splice(0,0,marker); // push item to top of list
     
             this.STATE.mode = MapPageMode.EditItem;
@@ -158,51 +172,60 @@ export class MapPage {
     }
 
     public addPolyline_Click() {
-        console.info('MapPage addPolyline()')
 
-        let polyline = new google.maps.Polyline({
-            map: this.map,
-            animation: google.maps.Animation.DROP,
-            path: [ ],
-            draggable: true,
-            editable: true
-        });
+        try {
+            console.info('MapPage addPolyline()')
 
-        polyline.id = "." + new Date();
-        this.STATE.markersList.splice(0,0,polyline); // push item to top of list
+            let polyline = DrawingService.GetPoyline(this.map);
 
-        this.T.toast('Click on the map to draw your polyline.')
+            polyline.acgoData = new PavingItemModel();
+            polyline.acgoData.name = "Line";
+            polyline.acgoData.drawingType = "Polyline";
+            this.Comm.pavingItem = polyline.acgoData; // load in form
+            
 
-        google.maps.event.addListener(this.map, 'click', (v) => {
-            var path = polyline.getPath();
-            path.push(v.latLng);
-            polyline.setPath(path);
-        });
+            this.STATE.markersList.splice(0,0,polyline); // push item to top of list
 
-        this.STATE.mode = MapPageMode.EditItem;
+            this.T.toast('Click on the map to draw your polyline.')
+
+            google.maps.event.addListener(this.map, 'click', (v) => {
+                // push new path point
+                var path = polyline.getPath();
+                path.push(v.latLng);
+                polyline.setPath(path);
+            });
+
+            this.STATE.mode = MapPageMode.EditItem;
+        }
+        catch (ex) {
+            this.T.toast('Error adding polyline: ' + ex);
+            console.error(ex);
+        }
     }
+
+
 
     public addPolygon_Click() {
         console.info('MapPage addPolygon()')
         
-        let polygon = new google.maps.Polygon({
-            map: this.map,
-            animation: google.maps.Animation.DROP,
-            path: [ ],
-            draggable: true,
-            editable: true
-        });
+        let polygon = DrawingService.GetPolygon(this.map);
 
-        polygon.id = "." + new Date();
+        // attach pavingItem data
+        polygon.acgoData = new PavingItemModel();
+        polygon.acgoData.name = "Area";
+        polygon.acgoData.drawingType = "Polygon";
+        this.Comm.pavingItem = polygon.acgoData; // load in the form
+        
+
         this.STATE.markersList.splice(0,0,polygon); // push item to top of list
 
         this.T.toast('Click on the map to draw your polygon.')
 
         google.maps.event.addListener(this.map, 'click', (v) => {
+            // push new path point
             var path = polygon.getPath();
             path.push(v.latLng);
             polygon.setPath(path);
-            //polyline.setEditable(true);
         });
 
         this.STATE.mode = MapPageMode.EditItem;
@@ -219,21 +242,4 @@ export class MapPage {
             entry.setMap(this.map);
         }
     }
-
-
-    /*
-    //let content = "<h4>Information!</h4>";          
-    //this.addInfoWindow(marker, content);
-    // private addInfoWindow(marker, content) {
- 
-    //     let infoWindow = new google.maps.InfoWindow({
-    //         content: content
-    //     });
-        
-    //     google.maps.event.addListener(marker, 'click', () => {
-    //         infoWindow.open(this.map, marker);
-    //     });
-        
-    // }
-    */
 }
