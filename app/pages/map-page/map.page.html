@@ -11,18 +11,22 @@
 
     <ion-grid id="map-grid">
         <ion-row id="map-row">
+
+            <!-- The Map -->
             <ion-col width-67 id="map-col">
-                <div #map id="map"></div>
+                <div #map id="map" class="hide-on-keyboard-open">
+                    <ion-spinner id="map-spinner" *ngIf="mapLoading"></ion-spinner>
+                </div>
             </ion-col>
 
             <ion-col width-33>
-                <ion-list>
+                <ion-list *ngIf="STATE.mode == MapPageMode.List">
                     <ion-list-header>
-                        {{markersList.length}} Items
+                        {{STATE.markersList.length}} Items
                     </ion-list-header>
 
                     <!-- ITEMS -->
-                    <ion-item-sliding *ngFor="let m of markersList; let i = index">
+                    <ion-item-sliding *ngFor="let m of STATE.markersList; let i = index">
                         <ion-item>
                             [{{i}}] {{m.id}}
                         </ion-item>
@@ -31,15 +35,26 @@
                         </ion-item-options>
                     </ion-item-sliding>
 
-                    <!-- FORM -->
-                    <item-form></item-form>
-
                 </ion-list>
 
-                <div padding id="add-bar">
-                    <button primary (click)="addMarker_Click()">Marker</button>
-                    <button primary (click)="addPolyline_Click()">Polyline</button>
-                    <button primary (click)="addPolygon_Click()">Area</button>
+                <!-- FORM -->
+                <item-form *ngIf="STATE.mode == MapPageMode.EditItem"></item-form>
+
+
+                <!-- Buttons -->
+                <div padding *ngIf="STATE.mode == MapPageMode.EditItem">
+                    <button primary (click)="endEdit()">Done</button>
+                </div>
+                <div padding *ngIf="STATE.mode == MapPageMode.List">
+
+                    <button outline (click)="recenter_Click()">
+                        <ion-icon name="navigate" *ngIf="!gettingLocation"></ion-icon>
+                        <ion-spinner *ngIf="gettingLocation"></ion-spinner>
+                    </button>
+
+                    <button primary (click)="addMarker_Click()"><ion-icon name="pin"></ion-icon></button>
+                    <button primary (click)="addPolyline_Click()"><ion-icon name="logo-steam" class="rotate-icon"></ion-icon></button>
+                    <button primary (click)="addPolygon_Click()"><ion-icon name="square-outline" class="rotate-icon"></ion-icon></button>
                 </div>
             </ion-col>
         </ion-row>

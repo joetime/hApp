@@ -4,10 +4,10 @@ import { Injectable } from '@angular/core';
 // It maintains subscriptions to events, and fires off items when appropriate
 
 @Injectable()
-export class CommService {
+export class MapService {
     
     constructor() {
-        console.info('CommService constructor');
+        console.info('MapService constructor');
     }
 
 

@@ -25,4 +25,12 @@
         bottom: 0;
         right: 0;
     }
+    #map-spinner {
+        margin-top: 48%;
+        margin-left: 48%;
+    }
+}
+
+.rotate-icon {
+    transform: rotate(-15deg);
 }
