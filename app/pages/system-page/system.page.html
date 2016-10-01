@@ -71,6 +71,15 @@
             </span>
         </ion-item>
 
+        <ion-item>
+            Upload Test {{uploadMessage}}
+            <span item-right>
+            <input [(ngModel)]="userEnteredFileName" />
+            <button primary (click)="testUpload_Click('text')">Text Upload</button>
+            <button primary (click)="testUpload_Click('pic')">Pic Upload</button>
+            </span>
+        </ion-item>
+
     </ion-list>
 
 </ion-content>

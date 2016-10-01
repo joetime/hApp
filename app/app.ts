@@ -22,6 +22,9 @@ import { CommService } from './services/comm.service';
 import { MapService } from './services/map.service';
 import { DrawingService } from './services/drawing.service';
 import { OptionsService } from './services/options.service';
+import { FileService } from './services/file.service';
+
+// Models
 import { PavingItemModel } from './models/item.model';
 
 // Components/Directives
@@ -56,13 +59,14 @@ import { HomePage } from './pages/home-page/home.page';
     DrawingService,
     OptionsService,
     PavingItemModel,
+    FileService
     ],
     
 })
 class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = MapPage;
+  rootPage: any = SystemPage;
   
 
   pages: Array<{title: string, component: any}>;

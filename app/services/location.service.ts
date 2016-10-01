@@ -11,7 +11,7 @@ export class LocationService {
     public getCurrentPosition(): Promise<any> {
         return new Promise<any> ((resolve, reject) => {
             
-            this.LOG.log('LocationService getCurrentPosition()', {});
+            //this.LOG.log('LocationService getCurrentPosition()', {});
 
             let resolved = false;
 
