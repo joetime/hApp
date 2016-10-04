@@ -48,6 +48,40 @@ export class Backand {
     });
   }
 
+  public addPavingItem(item: any) {
+    console.info('Backand addPavingItem()', name);
+
+    let data = JSON.stringify(item);
+
+    //return new Promise<any>((resolve, reject) => {
+    return this.http.post(this.api_url + '/1/objects/pavingItems?returnObject=true', data,
+      {
+        headers: this.authHeader()
+      })
+      .map(res => {
+        return res.json();
+      });
+    }
+  
+  // actual call to service
+  public updatePavingItem(item: any) {
+    console.info('Backand updatePavingItem()')
+
+    let data = JSON.stringify(item);
+
+    return this.http.put(this.api_url + '/1/objects/pavingItems/' + item.id + '?returnObject=true', data,
+      {
+        headers: this.authHeader()
+      })
+      .map(res => {
+
+        return res.json();
+      });
+  }
+
+
+
+
   // actual call to service
   private addLog(msg: string, obj: any, src: string, isError: Boolean) {
     //console.log('Backand addLog()')
@@ -63,10 +97,12 @@ export class Backand {
       headers: this.authHeader() 
     })
     .map(res => {
-      //console.log('Backand addLog() res =>', res);
+      
       return res.json();
     });
   }
+
+  
 
   // wrapper - delays call by 3 seconds
   public log(msg: string, obj: any = "", src: string = "", isError: Boolean = false): Promise<any> {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { PavingItemModel } from '../models/item.model';
+import { PavingItemModel } from '../models/paving-item.model';
 
 // The purpose of this class is to sync state across multiple components.
 // It maintains subscriptions to events, and fires off items when appropriate
@@ -11,11 +11,15 @@ export class CommService {
     constructor() {
         console.info('CommService constructor');
     }
-
+    // # PavingItem
+    public pavingItem: PavingItemModel;
     public setPavingItem(item: PavingItemModel) {
         this.pavingItem = item;
         console.log('Comm pavingItem=', this.pavingItem);
     }
-    public pavingItem: PavingItemModel;
-
+    // update for individual fields
+    public updatePavingItemQuantity(q: number) {
+        console.log('Comm updatePavingItemQuantity=', q);
+        this.pavingItem.quantity = q;
+    }
 }

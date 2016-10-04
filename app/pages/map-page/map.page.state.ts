@@ -25,5 +25,5 @@ export class MapPageState {
     public zoom: number;
     public center: any;
 
-    public markersList: any[] = []; // starts with empty list
+    public itemsList: any[] = []; // starts with empty list
 }

@@ -7,54 +7,69 @@
     </ion-navbar>
 </ion-header>
 
-<ion-content class="map-page">
+<ion-menu id="map-right-menu" side="right" [content]="mapcontent" type="overlay">
+    <ion-toolbar>
+        <ion-title>Edit Item</ion-title>
+    </ion-toolbar>
+    <ion-content>
+        <!-- LIST -->
+        <ion-list *ngIf="STATE.mode == MapPageMode.List">
+            <ion-list-header>
+                {{STATE.itemsList.length}} Items
+            </ion-list-header>
+
+            <!-- ITEMS -->
+            <ion-item-sliding *ngFor="let item of STATE.itemsList; let i = index">
+                <a ion-item (click)="pavingItemList_Click(m)">
+                    {{item.acgo.name}} ({{item.acgo.quantity | number:'1.0'}} {{item.acgo.unit}})
+                    <span item-right> {{item.acgo.id}} </span>
+                </a>
+                <ion-item-options>
+                    <button danger (click)="deleteMarker_Click()">Delete</button>
+                </ion-item-options>
+            </ion-item-sliding>
+
+        </ion-list>
+
+        <!-- FORM -->
+        <item-form pavingItem="editItem" *ngIf="STATE.mode == MapPageMode.EditItem"></item-form>
+
+    </ion-content>
+</ion-menu>
+
+<ion-content #mapcontent class="map-page">
 
     <ion-grid id="map-grid">
         <ion-row id="map-row">
 
             <!-- The Map -->
-            <ion-col width-67 id="map-col">
+            <ion-col width-90 id="map-col">
                 <div #map id="map" class="hide-on-keyboard-open">
                     <ion-spinner id="map-spinner" *ngIf="mapLoading"></ion-spinner>
                 </div>
             </ion-col>
 
-            <ion-col width-33>
-                <ion-list *ngIf="STATE.mode == MapPageMode.List">
-                    <ion-list-header>
-                        {{STATE.markersList.length}} Items
-                    </ion-list-header>
-
-                    <!-- ITEMS -->
-                    <ion-item-sliding *ngFor="let m of STATE.markersList; let i = index">
-                        <ion-item>
-                            [{{i}}] {{m.id}}
-                        </ion-item>
-                        <ion-item-options>
-                            <button danger (click)="deleteMarker_Click()">Delete</button>
-                        </ion-item-options>
-                    </ion-item-sliding>
-
-                </ion-list>
-
-                <!-- FORM -->
-                <item-form pavingItem="editItem" *ngIf="STATE.mode == MapPageMode.EditItem"></item-form>
-
-
+            <ion-col width-10>
+                <!-- Open Menu -->
+                <div padding>
+                    <button ion-button block menuToggle="right">
+                    <ion-icon name="menu"></ion-icon>
+                </button>
+                </div>
                 <!-- Buttons -->
                 <div padding *ngIf="STATE.mode == MapPageMode.EditItem">
                     <button primary (click)="endEdit()">Done</button>
                 </div>
                 <div padding *ngIf="STATE.mode == MapPageMode.List">
 
-                    <button outline (click)="recenter_Click()">
+                    <button outline block (click)="recenter_Click()">
                         <ion-icon name="navigate" *ngIf="!gettingLocation"></ion-icon>
                         <ion-spinner *ngIf="gettingLocation"></ion-spinner>
                     </button>
 
-                    <button primary (click)="addMarker_Click()"><ion-icon name="pin"></ion-icon></button>
-                    <button primary (click)="addPolyline_Click()"><ion-icon name="logo-steam" class="rotate-icon"></ion-icon></button>
-                    <button primary (click)="addPolygon_Click()"><ion-icon name="square-outline" class="rotate-icon"></ion-icon></button>
+                    <button primary block (click)="addMarker_Click()"><ion-icon name="pin"></ion-icon></button>
+                    <button primary block (click)="addPolyline_Click()"><ion-icon name="logo-steam" class="rotate-icon"></ion-icon></button>
+                    <button primary block (click)="addPolygon_Click()"><ion-icon name="square-outline" class="rotate-icon"></ion-icon></button>
                 </div>
             </ion-col>
         </ion-row>

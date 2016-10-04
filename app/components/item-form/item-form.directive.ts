@@ -1,7 +1,7 @@
 import { Component, Input, Directive } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
 
-import { PavingItemModel } from '../../models/item.model';
+import { PavingItemModel } from '../../models/paving-item.model';
 import { CameraService } from '../../services/camera.service';
 import { Toast } from '../../services/toast.service';
 import { OptionsService } from '../../services/options.service';
@@ -29,7 +29,7 @@ export class ItemForm {
     public idTypeOptions = this.Options.identificationTypeOptions;
 
     types = ['ADA', 'Repair', 'Maintenance', 'Other']
-    //model = new PavingItemModel();
+    
     submitted = false;
 
     OnSubmit () { this.submitted = true; }

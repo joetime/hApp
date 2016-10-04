@@ -23,9 +23,10 @@ import { MapService } from './services/map.service';
 import { DrawingService } from './services/drawing.service';
 import { OptionsService } from './services/options.service';
 import { FileService } from './services/file.service';
+import { PavingItemService } from './services/paving-item.service';
 
 // Models
-import { PavingItemModel } from './models/item.model';
+import { PavingItemModel } from './models/paving-item.model';
 
 // Components/Directives
 import { ItemForm } from './components/item-form/item-form.directive';
@@ -59,14 +60,15 @@ import { HomePage } from './pages/home-page/home.page';
     DrawingService,
     OptionsService,
     PavingItemModel,
-    FileService
+    FileService,
+    PavingItemService
     ],
     
 })
 class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = SystemPage;
+  rootPage: any = MapPage;
   
 
   pages: Array<{title: string, component: any}>;
@@ -82,8 +84,8 @@ class MyApp {
       { title: 'System', component: SystemPage },
       { title: 'Map', component: MapPage },
       { title: 'Logs', component: LogsPage },
-      { title: 'Page uno', component: Page1 },
-      { title: 'Page dos', component: Page2 },
+      /*{ title: 'Page uno', component: Page1 },
+      { title: 'Page dos', component: Page2 },*/
     ];
 
   }

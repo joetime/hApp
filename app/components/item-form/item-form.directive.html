@@ -2,9 +2,9 @@
 
     <!-- Photos -->
     <ion-item>
-        <img width="30%" src="http://placehold.it/100x100" id="image1" (click)="thumbnail_Click($event)" />
-        <img width="30%" src="http://placehold.it/100x100" id="image2" (click)="thumbnail_Click($event)" />
-        <img width="30%" src="http://placehold.it/100x100" id="image3" (click)="thumbnail_Click($event)" />
+        <img width="30%" src="/img/placeholder100x100.png" id="image1" (click)="thumbnail_Click($event)" />
+        <img width="30%" src="/img/placeholder100x100.png" id="image2" (click)="thumbnail_Click($event)" />
+        <img width="30%" src="/img/placeholder100x100.png" id="image3" (click)="thumbnail_Click($event)" />
     </ion-item>
 
     <form>
@@ -30,16 +30,15 @@
                 <ion-toggle danger [(ngModel)]="model.critical" checked="false" name="critical" id="critical"></ion-toggle>
             </ion-item>
 
-
+            <!-- Quantity -->
+            <ion-item>
+                <ion-label stacked for="name">Quantity</ion-label>
+                <ion-input type="number" id="quantity" name="quantity" [(ngModel)]="model.quantity" clearInput required></ion-input>
+            </ion-item>
 
         </ion-list>
 
-
-
-
-
-        <button primary type="submit">Submit</button><button primary danger type="button">Delete</button>
-
+        <button primary type="submit">Done</button><button primary danger type="button">Delete</button>
 
     </form>
     <div padding class="debug">

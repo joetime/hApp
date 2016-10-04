@@ -23,6 +23,7 @@ export class SettingsService {
     public mapLoadDelay = 500;
     public mapShowPoi = false;
     public mapShowTransit = false;
+    public static mapDefaultMarkerColor = 'blue'; // static for use in drawingservice
 
     public mapOptions = {
         // default center/zoom shows all USA

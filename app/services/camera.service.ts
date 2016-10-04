@@ -21,8 +21,8 @@ export class CameraService {
         encodingType: Camera.EncodingType.JPEG,
 
         quality: 50,
-        //targetHeight: 800,
-        //targetWidth: 600
+        targetHeight: 600,
+        targetWidth: 800
     };
 
     public getPicture(): Promise<any> {
