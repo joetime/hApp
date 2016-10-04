@@ -91,7 +91,8 @@ export class DrawingService {
         
         if (!drawingObject.getPath) {
             console.log('> marker - no getPath method');
-            return null;
+            if (drawingObject.acgo) return drawingObject.acgo.quantity; // if quant is already specified, return that
+            else return 1;
         }
         else if (drawingObject.acgo.drawingObjectType == DrawingObjectType.POLYLINE) {
             let path = drawingObject.getPath();

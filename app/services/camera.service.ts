@@ -20,9 +20,9 @@ export class CameraService {
         //allowEdit: true,
         encodingType: Camera.EncodingType.JPEG,
 
-        quality: 50,
-        targetHeight: 600,
-        targetWidth: 800
+        quality: 25,
+        targetHeight: 400,
+        targetWidth: 480
     };
 
     public getPicture(): Promise<any> {
@@ -33,7 +33,7 @@ export class CameraService {
             Camera.getPicture(this.cameraOptions).then ((imageData) => {
                 console.log('Camera.getPicture =>', imageData);
                 
-                this.fileService.uploadFile('testpic123.jpg', imageData).then(
+                /*this.fileService.uploadFile('testpic123.jpg', imageData).then(
                     (data) => { 
                         this.toast.toast('upload success ' + data);
                         this.LOG.log('upload success', JSON.stringify(data));
@@ -42,7 +42,7 @@ export class CameraService {
                         this.toast.toast('upload err: ' + JSON.stringify(err))
                         this.LOG.error('upload err', JSON.stringify(err))
                     }
-                );
+                );*/
 
                 resolve(imageData);
                 

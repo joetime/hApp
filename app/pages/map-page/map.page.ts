@@ -5,7 +5,8 @@ import {
 } from '@angular/core';
 import {
     NavController,
-    NavParams
+    NavParams,
+    MenuController
 } from 'ionic-angular';
 // Services
 import {
@@ -72,7 +73,9 @@ export class MapPage {
         private Comm: CommService,
         private Drawing: DrawingService,
         private PavingItem: PavingItemModel,
-        private PavingItemService: PavingItemService) {
+        private PavingItemService: PavingItemService,
+        private Menu: MenuController
+        ) {
 
         console.info('MapPage constructor. initialized =', this.STATE.initialized);
         // ionViewLoaded() will fire as well.
@@ -307,7 +310,7 @@ export class MapPage {
         });
     }
 
-    // handles the changing of points, drags, etc
+    // handles the changing of paths (when DONE is clicked)
     private updatePath(drawingObject) {
 
         console.info('updatePath', drawingObject);
@@ -317,6 +320,7 @@ export class MapPage {
         this.PavingItemService.Save({ id: drawingObject.acgo.id, path: pathStr }).then((res) => {
             console.log('item saved, pathStr=', pathStr);
             drawingObject.acgo = res;
+            this.Comm.updatePavingItemPathString(pathStr);
         },
         (err) => {
             this.T.toast('!! error saving item !!' + err)
@@ -342,7 +346,7 @@ export class MapPage {
 
 
     private _currentObject;
-    public endEdit() {
+    public endDrawingEdit() {
         // save any changes;
         this.updatePath(this._currentObject);
         this.updateQuantity(this._currentObject);
@@ -353,8 +357,10 @@ export class MapPage {
         this._currentObject.setDraggable(false);
         
         // clear state
-        this.STATE.mode = MapPageMode.List;
-        this._currentObject = null;        
+        // this.STATE.mode = MapPageMode.List;
+        //this._currentObject = null;   
+        this.Menu.open('right');
+             
     }
 
     restoreShapes() {

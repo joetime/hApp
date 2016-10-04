@@ -8,9 +8,18 @@ export class OptionsService {
     public identificationTypeOptions = [
         "Sitework", 
         "ADA", 
+        "Zone",
         "Other"];
 
-    public static typeOptions = [
+    public zoneTypeOptions = [
+        "Primary",
+        "Secondary",
+        "Access & Delivery",
+        "Dead",
+        "Other"
+    ];
+
+    public siteworkTypeOptions = [
         "Parking Lot",
         "Sidewalk",
         "Slab on Grade",
@@ -23,19 +32,19 @@ export class OptionsService {
         "Signage",
         "Misc."];
 
-    public static adaTypeOptions = [
+    public adaTypeOptions = [
         "Parking",
         "Curb Ramp",
         "Site Ramp",
         "Other"];
 
-    public static materialOptions = [
+    public materialOptions = [
         "Concrete",
         "Asphalt",
         "Block",
         "Other"];
 
-    public static failureOptions = [
+    public failureModeOptions = [
         "Oil Degradation",
         "Potholes",
         "Rutting",
@@ -50,13 +59,13 @@ export class OptionsService {
         "Cracking",
         "Other"];
 
-    public static ratingOptions = [
+    public ratingOptions = [
         "Minor",
         "Moderate",
         "Severe",
         "-"];
 
-    public static causeOptions = [
+    public causeOptions = [
         "Vehicle Deposits",
         "Fatigue",
         "Traffic Loading",

@@ -22,4 +22,9 @@ export class CommService {
         console.log('Comm updatePavingItemQuantity=', q);
         this.pavingItem.quantity = q;
     }
+    // update for individual fields
+    public updatePavingItemPathString(p: string) {
+        console.log('Comm updatePavingItemPathString=', p);
+        this.pavingItem.path = p;
+    }
 }

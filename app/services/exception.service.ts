@@ -17,6 +17,11 @@ export class AppExceptionHandler extends ExceptionHandler {
     call(exception, stackTrace = null, reason = null) {
  
         console.info('exception caught');
+
+        console.log(exception);
+        if (exception.indexOf && exception.indexOf('google is not defined') > -1) {
+            alert ('Google maps could not be reached. Either your connection is down, or Google maps is experiencing high volume. Try again in 30 seconds or so.');
+        }
         //this.toast.toast('exception caught');
 
         /*console.warn(exception);
