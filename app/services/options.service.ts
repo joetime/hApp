@@ -56,7 +56,6 @@ export class OptionsService {
         "Crack Spalling",
         "Faulting",
         "Settlement",
-        "Cracking",
         "Other"];
 
     public ratingOptions = [

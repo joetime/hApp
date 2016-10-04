@@ -30,23 +30,23 @@ export class PavingItemModel {
     }
 
     public id: number;
-    public drawingObjectType: number; // default to marker
+    public drawingObjectType: number; // defaults to marker
     public identificationType: string = "Sitework"; //default to sitework
     public path: string = "";
     public color: string = "";
     public type: string = "";
     public name: string = "";
     public critical: boolean = false;
-    public quantity: number = 0;
+    public quantity: number = 1;
     public unit: string = "";
     public material: string = "";
     public timeStamp: Date;
     public modified: Date;
     public description: string = "";
     public deleted: boolean = false;
-    public failureMode: string = "";
+    public failureMode: any = {};
     public rating: string = "";
-    public cause: string = "";
+    public cause: any = {};
     public recommendedRepair: string = "";
     public reference: string = ""
 }

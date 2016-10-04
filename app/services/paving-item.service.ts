@@ -15,6 +15,7 @@ export class PavingItemService {
         return new Promise((resolve, reject) => {
 
             item = this.packItem(item);
+            console.log('after packItem', item);
 
             // if it's a new item
             if (item.id == undefined || item.id < 0) {
@@ -40,9 +41,12 @@ export class PavingItemService {
     // Stringifies any lists
     private packItem(item) {
         
-        // stringify failuremode
-        if (item.failureMode && typeof(item.failureMode) === 'object')
+        //stringify failuremode
+        if (item.failureMode && typeof(item.failureMode) === 'object') {
+            console.log('stringify failuremode - before:', item.failureMode);
             item.failureMode = JSON.stringify(item.failureMode);
+            console.log('stringify failuremode - after:', item.failureMode);
+        }
         
         // stringify cause
         if (item.cause && typeof(item.cause) === 'object')
@@ -54,7 +58,7 @@ export class PavingItemService {
     // parses any lists
     private unPackItem(item) {
 
-        // Failuremode
+        //Failuremode
         try {
             if (item.failureMode && item.failureMode.length > 0) item.failureMode = JSON.parse(item.failureMode);  // restore failureMode
         }

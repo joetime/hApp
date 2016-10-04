@@ -60,6 +60,20 @@ export class ItemForm {
         console.log('typeButton_Click', t);
         this.model.type = t;
     }
+    
+    // handles failureMode changes
+    public failureModeButton_Click(t) {
+        this.model.failureMode[t] = !this.model.failureMode[t];
+        console.log('model.failureMode', this.model.failureMode)
+    }
+    // handles cause changes
+    public causeButton_Click(t) {
+
+        this.model.cause[t] = !this.model.cause[t];
+        console.log('model.cause', this.model.cause)
+        
+    }
+
 
     submitted = false;
 

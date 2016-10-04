@@ -56,12 +56,14 @@
             </ion-item>
 
             <!-- Failure Mode -->
-
             <ion-item>
-                <ion-label stacked for="failureMode">Failure Mode</ion-label>
-                <ion-select name="failureMode" [(ngModel)]="model.failureMode" multiple="true">
-                    <ion-option *ngFor="let t of Options.failureModeOptions" [value]="t">{{t}}</ion-option>
-                </ion-select>
+                <div class="list-item-label"> Failure Mode(s) </div>
+                <span *ngFor="let t of Options.failureModeOptions; let $index = index; trackBy: i">
+                    <button type="button" [ngClass]="{ 'button-primary': model.failureMode[t] }" outline (click)="failureModeButton_Click(t)">
+                        {{t}}
+                    </button>
+                    <br *ngIf="($index + 1) % 4 == 0" /><!-- break every 4 to prevent things from running off the page-->
+            </span>
             </ion-item>
 
             <!-- Rating (mild, moderate, severe)-->
@@ -73,12 +75,15 @@
                 </ion-segment>
             </ion-item>
 
-            <!-- Cause -->
+            <!-- Failure Mode -->
             <ion-item>
-                <ion-label stacked for="cause">Cause</ion-label>
-                <ion-select name="cause" [(ngModel)]="model.cause" multiple="true">
-                    <ion-option *ngFor="let t of Options.causeOptions" [value]="t">{{t}}</ion-option>
-                </ion-select>
+                <div class="list-item-label"> Cause(s) </div>
+                <span *ngFor="let t of Options.causeOptions; let $index = index; trackBy: i">
+                    <button type="button" [ngClass]="{ 'button-primary': model.cause[t] }" outline (click)="causeButton_Click(t)">
+                        {{t}}
+                    </button>
+                    <br *ngIf="($index + 1) % 4 == 0" /><!-- break every 4 to prevent things from running off the page-->
+            </span>
             </ion-item>
 
             <!-- Quantity -->
