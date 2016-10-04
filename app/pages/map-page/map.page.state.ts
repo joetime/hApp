@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-
+import { MapPage } from './map.page';
 // The purpose of this class is to sync state across multiple components.
 // It maintains subscriptions to events, and fires off items when appropriate
 
@@ -26,4 +26,5 @@ export class MapPageState {
     public center: any;
 
     public itemsList: any[] = []; // starts with empty list
+
 }

@@ -9,6 +9,7 @@ export class OptionsService {
         "Sitework", 
         "ADA", 
         "Zone",
+        "Core Sample",
         "Other"];
 
     public zoneTypeOptions = [
@@ -76,7 +77,7 @@ export class OptionsService {
         "Application",
         "Other"];
 
-    public static recommendedRepairOptions = [
+    public recommendedRepairOptions = [
         "No Action",
         "Mill/Overlay",
         "Full Depth Replacement",
@@ -88,7 +89,7 @@ export class OptionsService {
         "Concrete Replacement",
         "Other"];
 
-    public static unitOptions = [
+    public unitOptions = [
         "SF",
         "LF",
         "Each",

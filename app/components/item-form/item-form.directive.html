@@ -32,7 +32,7 @@
                 </ion-segment>
             </ion-item>
 
-            <!-- Type (switched based identifcationType-->
+            <!-- Type (switched based identifcationType) -->
             <ion-item>
                 <div class="list-item-label"> {{model.identificationItemType}} Type</div>
                 <span *ngFor="let t of typeOptions; let $index = index; trackBy: i">
@@ -43,7 +43,7 @@
                 </span>
             </ion-item>
 
-            <!-- Mateial (asphalt, concreted, etc) -->
+            <!-- Material (asphalt, concreted, etc) -->
             <ion-item>
                 <div class="list-item-label"> Material </div>
 
@@ -83,8 +83,21 @@
                         {{t}}
                     </button>
                     <br *ngIf="($index + 1) % 4 == 0" /><!-- break every 4 to prevent things from running off the page-->
-            </span>
+                </span>
             </ion-item>
+
+
+            <!-- Identification Type (Sitework, ADA, Zone, etc)-->
+            <ion-item>
+                <div class="list-item-label"> Recommended Repair </div>
+                <span *ngFor="let t of Options.recommendedRepairOptions; let $index = index; trackBy: i">
+                    <button type="button" [ngClass]="{ 'button-primary': model.recommendedRepair == t }" outline (click)="recommendedRepair_Change(t)">
+                        {{t}}
+                    </button>
+                    <br *ngIf="($index + 1) % 3 == 0" /><!-- break every 4 to prevent things from running off the page-->
+                </span>
+            </ion-item>
+
 
             <!-- Quantity -->
             <ion-item>
@@ -94,7 +107,7 @@
 
         </ion-list>
 
-        <button primary type="submit" (click)="DoneButton_Click()">Done</button>
+        <button primary type="button" (click)="DoneButton_Click()">Done</button>
         <button primary danger type="button">Delete</button>
 
     </form>

@@ -1,4 +1,4 @@
-import { Component, Input, Directive } from '@angular/core';
+import { Component, Input, Directive, Output, EventEmitter } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
 
 import { PavingItemModel } from '../../models/paving-item.model';
@@ -10,12 +10,16 @@ import { PavingItemService } from '../../services/paving-item.service';
 import { FileService } from '../../services/file.service';
 import { LogService } from '../../services/log.service';
 
+import { MapPageState } from '../../pages/map-page/map.page.state';
+
 @Component({
     //moduleId: 'someId',
     templateUrl: 'build/components/item-form/item-form.directive.html',
     selector: 'item-form',
 })
 export class ItemForm {
+
+    @Output() onEditComplete = new EventEmitter<boolean>();
 
     constructor(
         private camera:CameraService, 
@@ -25,7 +29,8 @@ export class ItemForm {
         private Comm: CommService,
         private PavingItemSvc: PavingItemService,
         private fileService: FileService, 
-        private LOG: LogService) {
+        private LOG: LogService, 
+        private STATE: MapPageState) {
 
         console.info('ItemForm constructor');
 
@@ -63,15 +68,22 @@ export class ItemForm {
     
     // handles failureMode changes
     public failureModeButton_Click(t) {
+        if (typeof(this.model.failureMode) != "object") this.model.failureMode = JSON.parse(this.model.failureMode); // fix for markers ?
+
+        console.log('this.model.failureMode', this.model.failureMode);
         this.model.failureMode[t] = !this.model.failureMode[t];
         console.log('model.failureMode', this.model.failureMode)
     }
     // handles cause changes
     public causeButton_Click(t) {
+        if (typeof(this.model.cause) != "object") this.model.cause = JSON.parse(this.model.cause); // fix for markers ?
 
         this.model.cause[t] = !this.model.cause[t];
         console.log('model.cause', this.model.cause)
-        
+    }
+
+    public recommendedRepair_Change(t) {
+        this.model.recommendedRepair = t;
     }
 
 
@@ -79,6 +91,8 @@ export class ItemForm {
 
     DoneButton_Click() {
         this.OnSubmit()
+        this.model = null; // clear model
+        this.onEditComplete.emit(true);
     }
 
     OnSubmit () { 
@@ -87,7 +101,7 @@ export class ItemForm {
         this.PavingItemSvc.Save(this.model).then((res) => {
             this.model = res;
         });
-        this.submitted = true; 
+        //this.submitted = true; 
     }
 
     public thumbnail_Click(ev, index) {

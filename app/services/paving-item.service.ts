@@ -42,15 +42,16 @@ export class PavingItemService {
     private packItem(item) {
         
         //stringify failuremode
-        if (item.failureMode && typeof(item.failureMode) === 'object') {
-            console.log('stringify failuremode - before:', item.failureMode);
+        if (item.failureMode && typeof(item.failureMode) === 'object') {   
+            console.log('packing failureMode');         
             item.failureMode = JSON.stringify(item.failureMode);
-            console.log('stringify failuremode - after:', item.failureMode);
         }
         
         // stringify cause
-        if (item.cause && typeof(item.cause) === 'object')
+        if (item.cause && typeof(item.cause) === 'object') {
+            console.log('packing cause');                     
             item.cause = JSON.stringify(item.cause);
+        }
         
         return item;
     }
@@ -60,7 +61,10 @@ export class PavingItemService {
 
         //Failuremode
         try {
-            if (item.failureMode && item.failureMode.length > 0) item.failureMode = JSON.parse(item.failureMode);  // restore failureMode
+            if (item.failureMode && item.failureMode.length > 3) 
+                console.log('unpacking failureMode b4-', item.failureMode);
+                item.failureMode = JSON.parse(item.failureMode);  // restore failureMode
+                console.log('unpacking failureMode af-', item.failureMode);
         }
         catch (ex) {
             console.error('error unpacking failureMode')
@@ -68,7 +72,11 @@ export class PavingItemService {
 
         // Cause
         try {
-            if (item.cause && item.cause.length > 0) item.cause = JSON.parse(item.cause);  // restore cause
+            if (item.cause && item.cause.length > 0) 
+                console.log('unpacking cause b4-', item.cause);            
+                item.cause = JSON.parse(item.cause);  // restore cause
+                console.log('unpacking cause af-', item.cause);            
+                
         } catch(ex) {
             console.error('error unpacking cause')   
         }

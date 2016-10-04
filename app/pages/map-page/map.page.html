@@ -20,10 +20,10 @@
 
             <!-- ITEMS -->
             <ion-item-sliding *ngFor="let item of STATE.itemsList; let i = index">
-                <a ion-item (click)="pavingItemList_Click(m)">
+                <a ion-item (click)="pavingItemList_Click(item)">
 
                     <!-- icon for drawing type -->
-                    <span item-left [ngSwitch]="item.drawingType">
+                    <span item-left [ngSwitch]="item.acgo.drawingType">
                         <ion-icon *ngSwitchCase="0" name="pin" class="rotate-icon"></ion-icon>
                         <ion-icon *ngSwitchCase="1" name="logo-steam" class="rotate-icon"></ion-icon>
                         <ion-icon *ngSwitchCase="2" name="square-outline" class="rotate-icon"></ion-icon>
@@ -39,7 +39,7 @@
         </ion-list>
 
         <!-- FORM -->
-        <item-form pavingItem="editItem" *ngIf="STATE.mode == MapPageMode.EditItem"></item-form>
+        <item-form pavingItem="editItem" *ngIf="STATE.mode == MapPageMode.EditItem" (onEditComplete)="editComplete(b)"></item-form>
 
     </ion-content>
 </ion-menu>

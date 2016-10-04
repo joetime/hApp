@@ -82,6 +82,16 @@ export class MapPage {
         this.mapOptions = this.SETTINGS.mapOptions;
     }
 
+    public editComplete(b) {
+        console.log('MapPage editComplete', b);
+        this.STATE.mode = MapPageMode.List;
+    }
+
+    public listMode() {
+        //this._currentObject = null;
+        //this.STATE.mode = MapPageMode.List;
+    }
+
     // # Map Init, refresh
     public recenter_Click() {
 
@@ -183,6 +193,9 @@ export class MapPage {
 
     public pavingItemList_Click(item) {
         this._currentObject = item;
+        this._currentObject.setEditable(true);
+        this._currentObject.setDraggable(true);
+
         this.Comm.setPavingItem(item.acgo);
         this.STATE.mode = MapPageMode.EditItem;
     }
@@ -208,7 +221,7 @@ export class MapPage {
 
             // Save to server 
             this.PavingItemService.Save(pavingItem).then((res) => {
-                    // this.T.toast('new item created');
+                    
                     // associate marker with data
                     marker.acgo = res;
                 },
@@ -304,7 +317,8 @@ export class MapPage {
                 polygon.setPath(path);
             });
 
-        this.STATE.mode = MapPageMode.EditItem; },
+            this.STATE.mode = MapPageMode.EditItem; 
+        },
         (err) => {
             this.T.toast('Error saving polygon')
         });
@@ -319,7 +333,7 @@ export class MapPage {
 
         this.PavingItemService.Save({ id: drawingObject.acgo.id, path: pathStr }).then((res) => {
             console.log('item saved, pathStr=', pathStr);
-            drawingObject.acgo = res;
+            drawingObject.acgo.path = pathStr;
             this.Comm.updatePavingItemPathString(pathStr);
         },
         (err) => {
@@ -334,7 +348,7 @@ export class MapPage {
 
         this.PavingItemService.Save({ id: drawingObject.acgo.id, quantity: quantity }).then((res) => {
             console.log('item saved');
-            drawingObject.acgo = res;
+            drawingObject.acgo.quantity = quantity;
             this.Comm.updatePavingItemQuantity(quantity);
         },
         (err) => {
@@ -360,7 +374,6 @@ export class MapPage {
         // this.STATE.mode = MapPageMode.List;
         //this._currentObject = null;   
         this.Menu.open('right');
-             
     }
 
     restoreShapes() {

@@ -10,7 +10,8 @@ export class PavingItemModel {
         // Marker defaults (0)
         if (initAs == 0) {
             console.log('initialize as marker');
-            this.name = "Area";
+            
+            this.name = "Marker";
             this.unit = "";
         } 
         // Polyline defaults (1)
