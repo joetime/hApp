@@ -16,39 +16,52 @@ export class DrawingService {
         console.info('DrawingService constructor');
     }
 
-    public static GetMarker (map) :any {
+    static parsePath(path:any, defaultVal:any): any {
+        if (path) { 
+            // restore marker
+            if (typeof(path) != "object") path = JSON.parse(path);
+        }
+        else {
+            // new marker
+            path = defaultVal;
+        }
+
+        return path;
+    }
+
+    public static setEditable(drawingObject: any, editable:boolean = true) {
+        if (drawingObject.setEditable) drawingObject.setEditable(editable);
+        drawingObject.setDraggable(editable);
+    }
+
+    public static GetMarker (map, path?:any) :any {
         
         var iconStr = 'http://maps.google.com/mapfiles/ms/icons/' + SettingsService.mapDefaultMarkerColor + '-dot.png'
         
         let marker = new google.maps.Marker({
             map: map,
             animation: google.maps.Animation.DROP,
-            position: map.getCenter(),
-            draggable: true,
+            position: this.parsePath(path, map.getCenter()),
             icon: iconStr
         });
 
         return marker;
     }
 
-    public static GetPoyline (map) :any {
+    public static GetPoyline (map, path?:any) :any {
+
         return new google.maps.Polyline({
             map: map,
-            animation: google.maps.Animation.DROP,
-            path: [ ],
-            draggable: true,
-            editable: true
+            path: this.parsePath(path, []),
         });
     }
     
-    public static GetPolygon (map) :any {
+    public static GetPolygon (map, path?:any) :any {
 
         return new google.maps.Polygon({
             map: map,
             animation: google.maps.Animation.DROP,
-            path: [ ],
-            draggable: true,
-            editable: true
+            path: this.parsePath(path,[]),
         });
     }
 

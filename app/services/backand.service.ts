@@ -48,6 +48,17 @@ export class Backand {
     });
   }
 
+  public getPavingItems() {
+
+    // ignore deleted items
+    var filter = JSON.stringify([ { fieldName: "deleted", value: false, operator: "equals" }]);
+
+    return this.http.get(this.api_url + '/1/objects/pavingItems?returnObject=true&filter=' + filter,{
+      headers: this.authHeader(), 
+    })
+    .map(res => res.json())
+  }
+
   public addPavingItem(item: any) {
     console.info('Backand addPavingItem()', name);
 

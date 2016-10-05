@@ -8,6 +8,18 @@ export class PavingItemService {
         private BK: Backand
     ) { }
 
+    public Get(): Promise<any> {
+
+        return new Promise((resolve, reject) => {
+            this.BK.getPavingItems().subscribe((res) => {
+                console.log('PavingItemService Get success', res);
+                resolve(res.data);
+            }, (err) => {
+                reject(err);
+            })
+        })
+    }
+
     public Save(item: any): Promise<any> {
 
         console.log('PavingItemService Save()', item);

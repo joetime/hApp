@@ -106,57 +106,102 @@ export class MapPage {
         this.loadMap(); // load first time only??
     }
 
+    loadData() {
+        console.log('MapPage loadData()');
+
+        this.PavingItemService.Get().then((d:any[]) => {
+
+            console.log('MapPage data recvd: ', d);
+
+            var tmp: any[];
+
+            d.forEach((item) => {
+                var drawingObject;
+                let pavingItem: PavingItemModel = item;
+                console.log('restoring item...', item);
+
+                if (item.drawingObjectType == DrawingObjectType.MARKER) {
+                    drawingObject = DrawingService.GetMarker(this.map, item.path);
+                }
+                else if(item.drawingObjectType == DrawingObjectType.POLYLINE) {
+                    drawingObject = DrawingService.GetPoyline(this.map, item.path);
+                }
+                else {
+                    drawingObject = DrawingService.GetPolygon(this.map, item.path);
+                }
+
+                drawingObject.acgo = pavingItem;
+
+                tmp.push(drawingObject);
+            });
+
+            // save as state.
+            this.STATE.itemsList = tmp;
+
+        }).catch((err) => { 'error getting data', err });
+    }
+
+
     // dicide to use last known location/zoom, or current loc of device
     // sends proper mapOptions to createMap()
-    loadMap(forceRecenter: boolean = false) {
+    loadMap(forceRecenter: boolean = false): Promise<boolean> {
         console.info('MapPage loadMap()')
 
-        this.mapLoading = true;
+        return new Promise((resolve, reject) => {
+            this.mapLoading = true;
 
-        try {
-            // load the last used from STATE
-            if (!forceRecenter && this.STATE.initialized) {
+            try {
+                // load the last used from STATE
+                if (!forceRecenter && this.STATE.initialized) {
 
-                console.log('creating map from stored info')
-                    // we might needt to stall for a sec or two
-                    // because the map wont load from STATE immediately sometimes - :?
-                setTimeout(() => {
+                    console.log('creating map from stored info')
+                        // we might needt to stall for a sec or two
+                        // because the map wont load from STATE immediately sometimes - :?
+                    setTimeout(() => {
 
-                    var latLng = new google.maps.LatLng(this.STATE.center.lat, this.STATE.center.lng);
-                    this.mapOptions.center = latLng;
-                    this.mapOptions.zoom = this.STATE.zoom;
-                    this.createMap();
-
-                }, this.SETTINGS.mapLoadDelay);
-            }
-            // get current location and use that
-            else {
-                console.log('creating map from current location')
-
-                this.gettingLocation = true;
-
-                // load from current device location
-                this.location.getCurrentPosition().then((v) => {
-                        var latLng = new google.maps.LatLng(v.coords.latitude, v.coords.longitude);
+                        var latLng = new google.maps.LatLng(this.STATE.center.lat, this.STATE.center.lng);
                         this.mapOptions.center = latLng;
-                        this.mapOptions.zoom = this.SETTINGS.mapDefaultZoom
+                        this.mapOptions.zoom = this.STATE.zoom;
                         this.createMap();
-                        this.STATE.initialized = true;
-                        this.gettingLocation = false;
-                    },
-                    // if rejected, load a default map state
-                    (rejected) => {
-                        this.T.toast('could not get location :( - ' + rejected)
-                        this.createMap();
-                        this.STATE.initialized = true;
-                        this.gettingLocation = false;
-                    });
-            }
 
-        } catch (ex) {
-            this.T.toast('error creating map:' + ex);
-            this.mapLoading = false;
-        }
+                    }, this.SETTINGS.mapLoadDelay);
+
+                    resolve(true);
+                }
+                // get current location and use that
+                else {
+                    console.log('creating map from current location')
+
+                    this.gettingLocation = true;
+
+                    // load from current device location
+                    this.location.getCurrentPosition().then((v) => {
+                            var latLng = new google.maps.LatLng(v.coords.latitude, v.coords.longitude);
+                            this.mapOptions.center = latLng;
+                            this.mapOptions.zoom = this.SETTINGS.mapDefaultZoom
+                            this.createMap();
+                            this.STATE.initialized = true;
+                            this.gettingLocation = false;
+                            resolve(true);
+                        },
+                        // if rejected, load a default map state
+                        (rejected) => {
+                            this.T.toast('could not get location :( - ' + rejected)
+                            this.createMap();
+                            this.STATE.initialized = true;
+                            this.gettingLocation = false;
+                            resolve(true);
+                        });
+                }
+                
+            } catch (ex) {
+                this.T.toast('error creating map:' + ex);
+                this.mapLoading = false;
+                reject(false);
+            }
+        });
+
+        
     }
 
     // Actually creates the map using the DIV#map 
@@ -173,7 +218,7 @@ export class MapPage {
         // google.maps.event.addListener(this.map, 'click', this.onMapClick);
 
         // re-draw makers from STATE
-        this.restoreShapes();
+        this.loadData();
 
         this.mapLoading = false;
     }
@@ -209,7 +254,9 @@ export class MapPage {
         try {
             let pavingItem: PavingItemModel = new PavingItemModel(0);
             let marker = DrawingService.GetMarker(this.map);
+            DrawingService.setEditable(marker);
             this._currentObject = marker;
+
 
             // get path from marker object           
             pavingItem.path = DrawingService.GetPathString(marker);
@@ -248,6 +295,7 @@ export class MapPage {
 
             let polyline = DrawingService.GetPoyline(this.map);
             this._currentObject = polyline;
+            DrawingService.setEditable(polyline);
 
             let pavingItem = new PavingItemModel(1);
             
@@ -294,6 +342,7 @@ export class MapPage {
 
         let polygon = DrawingService.GetPolygon(this.map);
         this._currentObject = polygon;
+        DrawingService.setEditable(polygon);
 
         // attach pavingItem data
         let pavingItem = new PavingItemModel(2);
@@ -367,8 +416,7 @@ export class MapPage {
 
         // clear events and set as not editble/dragable
         google.maps.event.clearListeners(this.map, 'click');
-        if (this._currentObject.setEditable) this._currentObject.setEditable(false);
-        this._currentObject.setDraggable(false);
+        DrawingService.setEditable(this._currentObject, false);
         
         // clear state
         // this.STATE.mode = MapPageMode.List;

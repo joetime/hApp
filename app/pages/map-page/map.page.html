@@ -23,13 +23,14 @@
                 <a ion-item (click)="pavingItemList_Click(item)">
 
                     <!-- icon for drawing type -->
-                    <span item-left [ngSwitch]="item.acgo.drawingType">
-                        <ion-icon *ngSwitchCase="0" name="pin" class="rotate-icon"></ion-icon>
+
+                    <span item-left [ngSwitch]="item.acgo.drawingObjectType" style="width: 15px;">
+                        <ion-icon *ngSwitchCase="0" name="pin"></ion-icon>
                         <ion-icon *ngSwitchCase="1" name="logo-steam" class="rotate-icon"></ion-icon>
                         <ion-icon *ngSwitchCase="2" name="square-outline" class="rotate-icon"></ion-icon>
-                    </span> {{item.acgo.name}} ({{item.acgo.quantity | number:'1.0'}} {{item.acgo.unit}})
+                    </span> {{item.acgo.recommendedRepair||item.acgo.name}}
 
-                    <span item-right> {{item.acgo.id}} </span>
+                    <span item-right class="text-quiet"> <b>{{item.acgo.quantity | number:'1.0'}}</b> {{item.acgo.unit}} </span>
                 </a>
                 <ion-item-options>
                     <button danger (click)="deleteMarker_Click()">Delete</button>
