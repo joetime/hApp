@@ -82,6 +82,7 @@ export class MapPage {
         this.mapOptions = this.SETTINGS.mapOptions;
     }
 
+    // fired from the form (child directive)
     public editComplete(b) {
         console.log('MapPage editComplete', b);
         this.STATE.mode = MapPageMode.List;
@@ -113,7 +114,7 @@ export class MapPage {
 
             console.log('MapPage data recvd: ', d);
 
-            var tmp: any[];
+            this.STATE.itemsList = [];
 
             d.forEach((item) => {
                 var drawingObject;
@@ -132,11 +133,8 @@ export class MapPage {
 
                 drawingObject.acgo = pavingItem;
 
-                tmp.push(drawingObject);
+                this.STATE.itemsList.push(drawingObject);
             });
-
-            // save as state.
-            this.STATE.itemsList = tmp;
 
         }).catch((err) => { 'error getting data', err });
     }
