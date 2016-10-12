@@ -67,7 +67,7 @@ export class MapPage {
     constructor(
         public STATE: MapPageState,
         public navCtrl: NavController,
-        private location: LocationService,
+        //private location: LocationService,
         private SETTINGS: SettingsService,
         private T: Toast,
         private Comm: CommService,
@@ -75,7 +75,7 @@ export class MapPage {
         private PavingItem: PavingItemModel,
         private PavingItemService: PavingItemService,
         private Menu: MenuController
-        ) {
+    ) {
 
         console.info('MapPage constructor. initialized =', this.STATE.initialized);
         // ionViewLoaded() will fire as well.
@@ -103,14 +103,14 @@ export class MapPage {
     // Wait for ionic, then load the map
     ionViewLoaded() {
         console.info('MapPage ionicViewLoaded()')
-            //if (!MapPage.initialized) 
+        //if (!MapPage.initialized) 
         this.loadMap(); // load first time only??
     }
 
     loadData() {
         console.log('MapPage loadData()');
 
-        this.PavingItemService.Get().then((d:any[]) => {
+        this.PavingItemService.Get().then((d: any[]) => {
 
             console.log('MapPage data recvd: ', d);
 
@@ -124,7 +124,7 @@ export class MapPage {
                 if (item.drawingObjectType == DrawingObjectType.MARKER) {
                     drawingObject = DrawingService.GetMarker(this.map, item.path);
                 }
-                else if(item.drawingObjectType == DrawingObjectType.POLYLINE) {
+                else if (item.drawingObjectType == DrawingObjectType.POLYLINE) {
                     drawingObject = DrawingService.GetPoyline(this.map, item.path);
                 }
                 else {
@@ -153,8 +153,8 @@ export class MapPage {
                 if (!forceRecenter && this.STATE.initialized) {
 
                     console.log('creating map from stored info')
-                        // we might needt to stall for a sec or two
-                        // because the map wont load from STATE immediately sometimes - :?
+                    // we might needt to stall for a sec or two
+                    // because the map wont load from STATE immediately sometimes - :?
                     setTimeout(() => {
 
                         var latLng = new google.maps.LatLng(this.STATE.center.lat, this.STATE.center.lng);
@@ -173,15 +173,15 @@ export class MapPage {
                     this.gettingLocation = true;
 
                     // load from current device location
-                    this.location.getCurrentPosition().then((v) => {
-                            var latLng = new google.maps.LatLng(v.coords.latitude, v.coords.longitude);
-                            this.mapOptions.center = latLng;
-                            this.mapOptions.zoom = this.SETTINGS.mapDefaultZoom
-                            this.createMap();
-                            this.STATE.initialized = true;
-                            this.gettingLocation = false;
-                            resolve(true);
-                        },
+                    LocationService.getCurrentPosition().then((v) => {
+                        var latLng = new google.maps.LatLng(v.coords.latitude, v.coords.longitude);
+                        this.mapOptions.center = latLng;
+                        this.mapOptions.zoom = this.SETTINGS.mapDefaultZoom
+                        this.createMap();
+                        this.STATE.initialized = true;
+                        this.gettingLocation = false;
+                        resolve(true);
+                    },
                         // if rejected, load a default map state
                         (rejected) => {
                             this.T.toast('could not get location :( - ' + rejected)
@@ -191,7 +191,7 @@ export class MapPage {
                             resolve(true);
                         });
                 }
-                
+
             } catch (ex) {
                 this.T.toast('error creating map:' + ex);
                 this.mapLoading = false;
@@ -199,7 +199,7 @@ export class MapPage {
             }
         });
 
-        
+
     }
 
     // Actually creates the map using the DIV#map 
@@ -221,7 +221,7 @@ export class MapPage {
         this.mapLoading = false;
     }
 
-    private onMapClick() {}
+    private onMapClick() { }
 
     // when map bounds change, save the values in the STATE
     private onBoundsChanged(ctrl: MapPage) {
@@ -266,10 +266,10 @@ export class MapPage {
 
             // Save to server 
             this.PavingItemService.Save(pavingItem).then((res) => {
-                    
-                    // associate marker with data
-                    marker.acgo = res;
-                },
+
+                // associate marker with data
+                marker.acgo = res;
+            },
                 (err) => {
                     this.T.toast('!! error creating item !! ' + err);
                     console.error('error creating item', err);
@@ -296,33 +296,33 @@ export class MapPage {
             DrawingService.setEditable(polyline);
 
             let pavingItem = new PavingItemModel(1);
-            
+
 
             // Save to server 
             this.PavingItemService.Save(pavingItem).then((res) => {
 
-                    console.log('new item created');
-                    // associate marker with data
-                    polyline.acgo = res;
+                console.log('new item created');
+                // associate marker with data
+                polyline.acgo = res;
 
-                    this.Comm.pavingItem = polyline.acgo; // load in form
+                this.Comm.pavingItem = polyline.acgo; // load in form
 
-                    this.STATE.itemsList.splice(0, 0, polyline); // push item to top of list
+                this.STATE.itemsList.splice(0, 0, polyline); // push item to top of list
 
-                    this.T.toast('Click on the map to draw your polyline.')
+                this.T.toast('Click on the map to draw your polyline.')
 
-                    google.maps.event.addListener(this.map, 'click', (v) => {
-                        // push new path point
-                        var path = polyline.getPath();
-                        path.push(v.latLng);
-                        polyline.setPath(path);
-                        // save changes to DB
-                        //this.updatePath(polyline);
-                        //this.updateQuantity(polyline);
-                    });
+                google.maps.event.addListener(this.map, 'click', (v) => {
+                    // push new path point
+                    var path = polyline.getPath();
+                    path.push(v.latLng);
+                    polyline.setPath(path);
+                    // save changes to DB
+                    //this.updatePath(polyline);
+                    //this.updateQuantity(polyline);
+                });
 
-                    this.STATE.mode = MapPageMode.EditItem;
-                },
+                this.STATE.mode = MapPageMode.EditItem;
+            },
                 (err) => {
                     this.T.toast('!! error creating item !! ' + err);
                     console.error('error creating item', err);
@@ -344,7 +344,7 @@ export class MapPage {
 
         // attach pavingItem data
         let pavingItem = new PavingItemModel(2);
-        
+
 
         this.PavingItemService.Save(pavingItem).then((res) => {
 
@@ -364,11 +364,11 @@ export class MapPage {
                 polygon.setPath(path);
             });
 
-            this.STATE.mode = MapPageMode.EditItem; 
+            this.STATE.mode = MapPageMode.EditItem;
         },
-        (err) => {
-            this.T.toast('Error saving polygon')
-        });
+            (err) => {
+                this.T.toast('Error saving polygon')
+            });
     }
 
     // handles the changing of paths (when DONE is clicked)
@@ -383,25 +383,25 @@ export class MapPage {
             drawingObject.acgo.path = pathStr;
             this.Comm.updatePavingItemPathString(pathStr);
         },
-        (err) => {
-            this.T.toast('!! error saving item !!' + err)
-            console.error('error saving item', err);
-        });
+            (err) => {
+                this.T.toast('!! error saving item !!' + err)
+                console.error('error saving item', err);
+            });
     }
 
     private updateQuantity(drawingObject) {
-         console.info('updateQuantity', drawingObject);
-         var quantity = DrawingService.GetQuantity(drawingObject);
+        console.info('updateQuantity', drawingObject);
+        var quantity = DrawingService.GetQuantity(drawingObject);
 
         this.PavingItemService.Save({ id: drawingObject.acgo.id, quantity: quantity }).then((res) => {
             console.log('item saved');
             drawingObject.acgo.quantity = quantity;
             this.Comm.updatePavingItemQuantity(quantity);
         },
-        (err) => {
-            this.T.toast('!! error saving item !!' + err)
-            console.error('error saving item', err);
-        });
+            (err) => {
+                this.T.toast('!! error saving item !!' + err)
+                console.error('error saving item', err);
+            });
     }
 
 
@@ -415,7 +415,7 @@ export class MapPage {
         // clear events and set as not editble/dragable
         google.maps.event.clearListeners(this.map, 'click');
         DrawingService.setEditable(this._currentObject, false);
-        
+
         // clear state
         // this.STATE.mode = MapPageMode.List;
         //this._currentObject = null;   

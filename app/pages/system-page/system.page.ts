@@ -10,21 +10,21 @@ import { FileService } from '../../services/file.service';
 
 
 @Component({
-  templateUrl: 'build/pages/system-page/system.page.html'
+    templateUrl: 'build/pages/system-page/system.page.html'
 })
 export class SystemPage {
 
-    constructor (
-        private updateService: UpdateService, 
-        private logService: LogService, 
+    constructor(
+        private updateService: UpdateService,
+        private logService: LogService,
         private locationService: LocationService,
         private cameraService: CameraService,
         private Toast: Toast,
-        private File: FileService) {}
+        private File: FileService) { }
 
     // for debug
     private testUpdate: Boolean = false;
-    
+
     //# ExceptionHandler
     public testExceptionHandler_Click(ev, nothingHere) {
         try {
@@ -44,50 +44,50 @@ export class SystemPage {
     public base64Image;
     // Actions
     public testCamera_Click() {
-        console.info('testCamera_Click()'); 
-        
+        console.info('testCamera_Click()');
+
         this.pictureSuccess = false;
         this.pictureFail = false;
         this.cameraNotAvailable = false;
         this.pictureData = "";
         this.gettingPicture = true;
 
-        this.cameraService.getPicture().then((imageData) => { 
+        this.cameraService.getPicture().then((imageData) => {
             console.log('testCamera_Click() resp =>', imageData);
             this.gettingPicture = false;
-            this.pictureSuccess = true; 
+            this.pictureSuccess = true;
             this.pictureData = imageData;
             this.base64Image = 'data:image/jpeg;base64,' + imageData;
 
         }, (err) => {
-            
+
             if (err == "cordova_not_available") {
                 this.cameraNotAvailable = true;
             }
             else {
-                console.error('testCamera_Click() err =>', err);      
+                console.error('testCamera_Click() err =>', err);
                 this.pictureFail = true;
             }
-            this.gettingPicture = false;   
+            this.gettingPicture = false;
         });
     }
 
     //# Test Upload 
     public userEnteredFileName = 'joetest.jpg';
     public uploadMessage = "";
-    public testUpload_Click(type:string) {
+    public testUpload_Click(type: string) {
         this.uploadMessage = "...";
 
         var data = type == 'pic' ? this.getTestPictureData() : "test123 this is a test!"
 
         this.File.uploadFile(this.userEnteredFileName, data).then(
-            (resp) => { 
+            (resp) => {
                 console.log(resp)
                 this.uploadMessage = 'SUCCESS! ' + JSON.stringify(resp);
             },
-            (err) => { 
+            (err) => {
                 console.log(err);
-                this.uploadMessage = 'ERROR!' + JSON.stringify(err); 
+                this.uploadMessage = 'ERROR!' + JSON.stringify(err);
             });
     }
 
@@ -101,23 +101,23 @@ export class SystemPage {
     public locationString: any = {};
     // Actions
     public testLocation_Click() {
-        console.info('testLocation_Click()'); 
-        
+        console.info('testLocation_Click()');
+
         this.locationSuccess = false;
         this.locationFail = false;
         this.locationString = "";
         this.gettingLocation = true;
 
-        this.locationService.getCurrentPosition().then((resp) => { 
+        LocationService.getCurrentPosition().then((resp) => {
             console.log('testLocation_Click() resp =>', resp);
             this.gettingLocation = false;
             this.locationSuccess = true;
             this.locationString = resp.coords.latitude + ", " + resp.coords.longitude + ". acc:" + resp.coords.accuracy;
-            
+
         }, (err) => {
             console.error('testLocation_Click() err =>', err);
-            this.gettingLocation = false;         
-            this.locationFail = true;   
+            this.gettingLocation = false;
+            this.locationFail = true;
         });
     }
 
@@ -165,17 +165,17 @@ export class SystemPage {
         // use the 'updateService' to check for availbale updates
         this.updateService.check(this.testUpdate).then((needsUpdate) => {
             console.log('=', needsUpdate);
-            
+
             this.needsUpdate = needsUpdate;
             this.checkedForUpdate = true;
             this.checking = false;
-        }, 
-        (err) => { 
-            console.log('=rejected:', err);
-            this.checkedForUpdate = true;
-            this.checking = false;
-            this.deployNotAvailable = true;
-        });   
+        },
+            (err) => {
+                console.log('=rejected:', err);
+                this.checkedForUpdate = true;
+                this.checking = false;
+                this.deployNotAvailable = true;
+            });
     }
 
     public doUpdate() {

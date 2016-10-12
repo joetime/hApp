@@ -1,0 +1,53 @@
+<ion-header>
+	<ion-navbar>
+		<button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+		<ion-title>Project 123.123344</ion-title>
+	</ion-navbar>
+</ion-header>
+
+<!-- Right side menu -->
+<ion-menu id="main-right-menu" side="right" [content]="maincontent" type="overlay">
+	<ion-toolbar>
+		<ion-title>{{test}}</ion-title>
+	</ion-toolbar>
+	<ion-content>
+		{{test}}
+
+		<!-- DIRECTIVE: List of items -->
+		<acgo-list>...</acgo-list>
+
+	</ion-content>
+</ion-menu>
+
+<!-- Main content area -->
+<ion-content #maincontent class="main-page">
+
+	<ion-grid id="map-grid" class="scroll">
+		<ion-row id="map-row" class="scroll">
+
+			<ion-col width-90 id="map-col" class="scroll">
+
+				<!-- DIRECTIVE: Map control -->
+				<acgo-map>...</acgo-map>
+
+			</ion-col>
+
+			<ion-col width-10 id="tools-col" padding>
+
+				<!-- Menu button -->
+				<button ion-button block menuToggle="right">
+                    <ion-icon name="menu"></ion-icon>
+                </button>
+
+				<hr />
+
+				<!-- DIRECTIVE: Map tools -->
+				<acgo-tools>...</acgo-tools>
+
+
+			</ion-col>
+		</ion-row>
+	</ion-grid>
+</ion-content>

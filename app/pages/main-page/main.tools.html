@@ -1,0 +1,34 @@
+<div #myTools id="myTools">
+
+	<!-- Center on current location button -->
+	<button block outline (click)="NavigateButton_Click()" [ngSwitch]="gettingLocation">
+        
+        <ion-icon *ngSwitchCase="false" name="navigate"></ion-icon>
+        <ion-spinner *ngSwitchCase="true"></ion-spinner>
+
+    </button>
+
+	<hr />
+
+	<div [ngSwitch]="mode">
+
+		<p *ngSwitchCase="'create'">
+			<!-- Create shapes buttons -->
+			<button block (click)="CreateButton_Click('M')">M</button>
+			<button block (click)="CreateButton_Click('L')">L</button>
+			<button block (click)="CreateButton_Click('P')">P</button>
+		</p>
+
+		<p *ngSwitchCase="'editObject'">
+			<button block (click)="EditCompleteButton_Click()">Ok</button>
+			<button block outline (click)="EditCancelButton_Click()">X</button>
+		</p>
+	</div>
+
+	<!-- Debug info -->
+	<div class="debug">
+		<hr /> mode: {{mode}}
+		<hr /> gettingLocation: {{gettingLocation}}
+	</div>
+
+</div>
