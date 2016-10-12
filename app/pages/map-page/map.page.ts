@@ -1,50 +1,20 @@
-import {
-    Component,
-    ViewChild,
-    ElementRef
-} from '@angular/core';
-import {
-    NavController,
-    NavParams,
-    MenuController
-} from 'ionic-angular';
+import { Component, ViewChild, ElementRef } from '@angular/core';
+import { NavController, NavParams, MenuController } from 'ionic-angular';
 // Services
-import {
-    SettingsService
-} from '../../services/settings.service';
-import {
-    LogService
-} from '../../services/log.service';
-import {
-    Backand
-} from '../../services/backand.service';
-import {
-    LocationService
-} from '../../services/location.service';
-import {
-    Toast
-} from '../../services/toast.service';
-import {
-    CommService
-} from '../../services/comm.service';
-import {
-    DrawingService, DrawingObjectType
-} from '../../services/drawing.service';
-import {
-    PavingItemService
-} from '../../services/paving-item.service';
+//import { SettingsService } from '../../services/settings.service';
+import { SettingsStatic } from '../../services/settings.static';
+import { LogService } from '../../services/log.service';
+import { Backand } from '../../services/backand.service';
+import { LocationService } from '../../services/location.service';
+import { Toast } from '../../services/toast.service';
+import { CommService } from '../../services/comm.service';
+import { DrawingService, DrawingObjectType } from '../../services/drawing.service';
+import { PavingItemService } from '../../services/paving-item.service';
 // Directive
-import {
-    PavingItemModel
-} from '../../models/paving-item.model';
-import {
-    ItemForm
-} from '../../components/item-form/item-form.directive';
+import { PavingItemModel } from '../../models/paving-item.model';
+import { ItemForm } from '../../components/item-form/item-form.directive';
 
-import {
-    MapPageState,
-    MapPageMode
-} from './map.page.state'; // a state service for this controller
+import { MapPageState, MapPageMode } from './map.page.state'; // a state service for this controller
 
 declare var google;
 
@@ -68,7 +38,6 @@ export class MapPage {
         public STATE: MapPageState,
         public navCtrl: NavController,
         //private location: LocationService,
-        private SETTINGS: SettingsService,
         private T: Toast,
         private Comm: CommService,
         private Drawing: DrawingService,
@@ -79,7 +48,7 @@ export class MapPage {
 
         console.info('MapPage constructor. initialized =', this.STATE.initialized);
         // ionViewLoaded() will fire as well.
-        this.mapOptions = this.SETTINGS.mapOptions;
+        this.mapOptions = SettingsStatic.mapOptions;
     }
 
     // fired from the form (child directive)

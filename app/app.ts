@@ -71,13 +71,15 @@ import { HomePage } from './pages/home-page/home.page';
 
 })
 class MyApp {
-  @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = MainPage;
+  @ViewChild(Nav) nav: Nav; // Angular access to the Nav component
 
+  rootPage: any = MapPage;
 
+  // Array of pages to include in the left menu
   pages: Array<{ title: string, component: any }>;
 
+  // CONSTRUCTOR
   constructor(public platform: Platform, private LOG: LogService) {
     this.initializeApp();
 
@@ -111,6 +113,8 @@ class MyApp {
     this.nav.setRoot(page.component);
   }
 }
+
+
 // Cloud settings (used by the deploy service for updating software on device)
 const cloudSettings: CloudSettings = {
   'core': {
@@ -118,6 +122,7 @@ const cloudSettings: CloudSettings = {
   }
 };
 
+// Exception handler config
 let _bypassExceptionHandler = false;
 if (_bypassExceptionHandler) {
 
