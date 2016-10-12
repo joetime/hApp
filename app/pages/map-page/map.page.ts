@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { NavController, NavParams, MenuController } from 'ionic-angular';
 // Services
 //import { SettingsService } from '../../services/settings.service';
@@ -25,9 +25,14 @@ declare var google;
 export class MapPage {
 
     MapPageMode = MapPageMode; // allows us to use enum in template
+    public mode: MapPageMode;
 
     @ViewChild('map') mapElement: ElementRef;
     public editItem: any; // passed to form
+
+    // will hold the last item updated so we can 
+    // highlight in interface
+    public _lastUpdated: any;
 
     map: any;
     mapOptions: any;
@@ -43,23 +48,27 @@ export class MapPage {
         private Drawing: DrawingService,
         private PavingItem: PavingItemModel,
         private PavingItemService: PavingItemService,
-        private Menu: MenuController
+        private Menu: MenuController,
+        private Zone: NgZone
     ) {
 
         console.info('MapPage constructor. initialized =', this.STATE.initialized);
         // ionViewLoaded() will fire as well.
         this.mapOptions = SettingsStatic.mapOptions;
+        this.mode = MapPageMode.List;
     }
 
     // fired from the form (child directive)
     public editComplete(b) {
         console.log('MapPage editComplete', b);
-        this.STATE.mode = MapPageMode.List;
+        this.mode = MapPageMode.List;
+
+        this._lastUpdated = b;
     }
 
     public listMode() {
         //this._currentObject = null;
-        //this.STATE.mode = MapPageMode.List;
+        // this.mode = MapPageMode.List;
     }
 
     // # Map Init, refresh
@@ -68,6 +77,12 @@ export class MapPage {
         let forceRecenter = true;
         this.loadMap(forceRecenter);
     }
+
+    public Reframe_Click() {
+        DrawingService.CenterOnDrawingObjects(this.map, this.STATE.itemsList);
+    }
+
+
 
     // Wait for ionic, then load the map
     ionViewLoaded() {
@@ -107,6 +122,7 @@ export class MapPage {
 
         }).catch((err) => { 'error getting data', err });
     }
+
 
 
     // dicide to use last known location/zoom, or current loc of device
@@ -173,7 +189,7 @@ export class MapPage {
 
     // Actually creates the map using the DIV#map 
     // - adds the bounds_changed listener
-    private createMap() {
+    createMap() {
         console.log('creating map: ', this.mapOptions);
 
         this.map = new google.maps.Map(this.mapElement.nativeElement, this.mapOptions);
@@ -190,10 +206,10 @@ export class MapPage {
         this.mapLoading = false;
     }
 
-    private onMapClick() { }
+    onMapClick() { }
 
     // when map bounds change, save the values in the STATE
-    private onBoundsChanged(ctrl: MapPage) {
+    onBoundsChanged(ctrl: MapPage) {
         ctrl.STATE.center = {
             lat: ctrl.map.getCenter().lat(),
             lng: ctrl.map.getCenter().lng()
@@ -203,15 +219,31 @@ export class MapPage {
     }
 
 
-    public pavingItemList_Click(item) {
-        this._currentObject = item;
-        this._currentObject.setEditable(true);
-        this._currentObject.setDraggable(true);
+    pavingItemList_Click(item) {
+        console.info('MapPage pavingItemList_Click()')
 
-        this.Comm.setPavingItem(item.acgo);
-        this.STATE.mode = MapPageMode.EditItem;
+        this.openItem(item);
     }
 
+    openItem(item) {
+        console.log('opening item', item);
+
+        this._currentObject = item;
+
+        DrawingService.setEditable(this._currentObject);
+
+        DrawingService.CenterOnDrawingObject(this.map, this._currentObject);
+
+        this.Comm.setPavingItem(item.acgo);
+
+        this.mode = MapPageMode.EditItem;
+    }
+
+    handleDrawingObjectClick(drawingObject) {
+        //if (drawingObject == this._currentObject) return; // just ignore
+
+        this.openItem(drawingObject);
+    }
 
     // # Markers, Lines, Polygons
 
@@ -222,6 +254,13 @@ export class MapPage {
             let pavingItem: PavingItemModel = new PavingItemModel(0);
             let marker = DrawingService.GetMarker(this.map);
             DrawingService.setEditable(marker);
+            marker.addListener('click', (ev) => {
+                console.log('marker clicked');
+                this.Zone.run(() => {
+                    this.handleDrawingObjectClick(marker);
+                });
+            })
+
             this._currentObject = marker;
 
 
@@ -248,7 +287,7 @@ export class MapPage {
 
             this.STATE.itemsList.splice(0, 0, marker); // push item to top of list
 
-            this.STATE.mode = MapPageMode.EditItem;
+            this.mode = MapPageMode.EditItem;
 
         } catch (ex) {
             this.T.toast('error creating marker:' + ex);
@@ -263,6 +302,14 @@ export class MapPage {
             let polyline = DrawingService.GetPoyline(this.map);
             this._currentObject = polyline;
             DrawingService.setEditable(polyline);
+
+            polyline.addListener('click', (ev) => {
+                console.log('polyline clicked');
+                this.Zone.run(() => {
+                    this.handleDrawingObjectClick(polyline);
+                });
+            });
+
 
             let pavingItem = new PavingItemModel(1);
 
@@ -290,7 +337,7 @@ export class MapPage {
                     //this.updateQuantity(polyline);
                 });
 
-                this.STATE.mode = MapPageMode.EditItem;
+                this.mode = MapPageMode.EditItem;
             },
                 (err) => {
                     this.T.toast('!! error creating item !! ' + err);
@@ -310,6 +357,12 @@ export class MapPage {
         let polygon = DrawingService.GetPolygon(this.map);
         this._currentObject = polygon;
         DrawingService.setEditable(polygon);
+        polygon.addListener('click', (ev) => {
+            console.log('polygon clicked');
+            this.Zone.run(() => {
+                this.handleDrawingObjectClick(polygon);
+            });
+        });
 
         // attach pavingItem data
         let pavingItem = new PavingItemModel(2);
@@ -333,7 +386,7 @@ export class MapPage {
                 polygon.setPath(path);
             });
 
-            this.STATE.mode = MapPageMode.EditItem;
+            this.mode = MapPageMode.EditItem;
         },
             (err) => {
                 this.T.toast('Error saving polygon')
@@ -386,7 +439,7 @@ export class MapPage {
         DrawingService.setEditable(this._currentObject, false);
 
         // clear state
-        // this.STATE.mode = MapPageMode.List;
+        //  this.mode = MapPageMode.List;
         //this._currentObject = null;   
         this.Menu.open('right');
     }

@@ -19,36 +19,36 @@ import { MapPageState } from '../../pages/map-page/map.page.state';
 })
 export class ItemForm {
 
-    @Output() onEditComplete = new EventEmitter<boolean>();
+    @Output() onEditComplete = new EventEmitter<any>();
 
     constructor(
-        private camera:CameraService, 
+        private camera: CameraService,
         private T: Toast,
         public popoverCtrl: PopoverController,
-        public Options: OptionsService, 
+        public Options: OptionsService,
         private Comm: CommService,
         private PavingItemSvc: PavingItemService,
-        private fileService: FileService, 
-        private LOG: LogService, 
+        private fileService: FileService,
+        private LOG: LogService,
         private STATE: MapPageState) {
 
         console.info('ItemForm constructor');
 
         // defaults to sitework   
-        this.typeOptions = this.Options.siteworkTypeOptions;     
+        this.typeOptions = this.Options.siteworkTypeOptions;
         this.model.type = this.typeOptions[0];
         this.idTypeOptions = this.Options.identificationTypeOptions;
     }
     public model: PavingItemModel = this.Comm.pavingItem;      // for the UI
-    
+
     public idTypeOptions: string[];
-    public typeOptions:string[];
+    public typeOptions: string[];
 
     // Switch the "type" options based on the primary type
     public identificationType_Change() {
 
         console.log('identificationType_Change [' + this.model.identificationType + ']');
-        
+
         if (this.model.identificationType == "Zone") {
             this.typeOptions = this.Options.zoneTypeOptions;
         } else if (this.model.identificationType == "ADA") {
@@ -65,10 +65,10 @@ export class ItemForm {
         console.log('typeButton_Click', t);
         this.model.type = t;
     }
-    
+
     // handles failureMode changes
     public failureModeButton_Click(t) {
-        if (typeof(this.model.failureMode) != "object") this.model.failureMode = JSON.parse(this.model.failureMode); // fix for markers ?
+        if (typeof (this.model.failureMode) != "object") this.model.failureMode = JSON.parse(this.model.failureMode); // fix for markers ?
 
         console.log('this.model.failureMode', this.model.failureMode);
         this.model.failureMode[t] = !this.model.failureMode[t];
@@ -76,7 +76,7 @@ export class ItemForm {
     }
     // handles cause changes
     public causeButton_Click(t) {
-        if (typeof(this.model.cause) != "object") this.model.cause = JSON.parse(this.model.cause); // fix for markers ?
+        if (typeof (this.model.cause) != "object") this.model.cause = JSON.parse(this.model.cause); // fix for markers ?
 
         this.model.cause[t] = !this.model.cause[t];
         console.log('model.cause', this.model.cause)
@@ -91,13 +91,14 @@ export class ItemForm {
 
     DoneButton_Click() {
         this.OnSubmit()
+        this.onEditComplete.emit(this.model.id);
         this.model = null; // clear model
-        this.onEditComplete.emit(true);
+
     }
 
-    OnSubmit () { 
+    OnSubmit() {
         // save the marker info?
-        
+
         this.PavingItemSvc.Save(this.model).then((res) => {
             this.model = res;
         });
@@ -107,7 +108,7 @@ export class ItemForm {
     public thumbnail_Click(ev, index) {
 
         //ev.target.src = "//placehold.it/100x100/ffcc22";
-        
+
         this.camera.getPicture().then((imageData) => {
             console.log(ev);
             ev.target.src = 'data:image/jpeg;base64,' + imageData;
@@ -117,12 +118,12 @@ export class ItemForm {
             this.model[fieldName] = 'uploading ' + index + '...';
 
             this.fileService.uploadFile(filename, imageData).then(
-                (data) => { 
+                (data) => {
                     this.T.toast('upload success ' + data);
                     this.LOG.log('upload success', JSON.stringify(data));
 
                     // update the pavingItem record
-                    
+
                     var saveMe = { id: this.model.id };
                     saveMe[fieldName] = filename;
 
@@ -130,7 +131,7 @@ export class ItemForm {
                         this.model[fieldName] = filename;
                     });
                 },
-                (err) => { 
+                (err) => {
                     this.T.toast('upload err: ' + JSON.stringify(err))
                     this.LOG.error('upload err', JSON.stringify(err))
                 }

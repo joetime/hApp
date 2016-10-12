@@ -11,15 +11,15 @@ export enum DrawingObjectType {
 
 @Injectable()
 export class DrawingService {
-    
+
     constructor() {
         console.info('DrawingService constructor');
     }
 
-    static parsePath(path:any, defaultVal:any): any {
-        if (path) { 
+    static parsePath(path: any, defaultVal: any): any {
+        if (path) {
             // restore marker
-            if (typeof(path) != "object") path = JSON.parse(path);
+            if (typeof (path) != "object") path = JSON.parse(path);
         }
         else {
             // new marker
@@ -29,15 +29,15 @@ export class DrawingService {
         return path;
     }
 
-    public static setEditable(drawingObject: any, editable:boolean = true) {
+    public static setEditable(drawingObject: any, editable: boolean = true) {
         if (drawingObject.setEditable) drawingObject.setEditable(editable);
         drawingObject.setDraggable(editable);
     }
 
-    public static GetMarker (map, path?:any) :any {
-        
+    public static GetMarker(map, path?: any): any {
+
         var iconStr = 'http://maps.google.com/mapfiles/ms/icons/' + SettingsService.mapDefaultMarkerColor + '-dot.png'
-        
+
         let marker = new google.maps.Marker({
             map: map,
             animation: google.maps.Animation.DROP,
@@ -48,20 +48,20 @@ export class DrawingService {
         return marker;
     }
 
-    public static GetPoyline (map, path?:any) :any {
+    public static GetPoyline(map, path?: any): any {
 
         return new google.maps.Polyline({
             map: map,
             path: this.parsePath(path, []),
         });
     }
-    
-    public static GetPolygon (map, path?:any) :any {
+
+    public static GetPolygon(map, path?: any): any {
 
         return new google.maps.Polygon({
             map: map,
             animation: google.maps.Animation.DROP,
-            path: this.parsePath(path,[]),
+            path: this.parsePath(path, []),
         });
     }
 
@@ -72,7 +72,7 @@ export class DrawingService {
     // format: {"lat":39.28569379531456,"lng":-76.58095121383667},
     // - or - an array of those [{ lat: 3.1, lng:-5.6 },{...}, {...}, ...]
     public static GetPathString(drawingObject): string {
-        
+
         console.log('DrawingService GetPath() drawingObject', drawingObject);
 
         // for lines and shapes
@@ -86,7 +86,7 @@ export class DrawingService {
             }
             console.log('DrawingService GetPath() result', result);
             return JSON.stringify(result);
-        } 
+        }
         // for markers
         else {
             var pos = drawingObject.getPosition();
@@ -97,11 +97,11 @@ export class DrawingService {
 
 
     // Get Quantity : number (whole)
-    public static GetQuantity(drawingObject): number {        
+    public static GetQuantity(drawingObject): number {
         console.log('DrawingService GetQuantity() drawingObject', drawingObject);
-        
-        var quant:number = 0;
-        
+
+        var quant: number = 0;
+
         if (!drawingObject.getPath) {
             console.log('> marker - no getPath method');
             if (drawingObject.acgo) return drawingObject.acgo.quantity; // if quant is already specified, return that
@@ -119,9 +119,30 @@ export class DrawingService {
             // square meters to sqaure feet
             quant = google.maps.geometry.spherical.computeArea(path) * 10.7639;
         }
-            console.log('> quant: ', quant);
-        
+        console.log('> quant: ', quant);
+
         return Math.round(quant);
+    }
+
+    public static CenterOnDrawingObject(map, drawingObject) {
+        // just a simpler version of fit to many
+        this.CenterOnDrawingObjects(map, [drawingObject]);
+    }
+
+    public static CenterOnDrawingObjects(map, list) {
+        var bounds = new google.maps.LatLngBounds();
+        list.forEach(drawingObject => {
+
+            if (drawingObject.getPath) {
+                var path = drawingObject.getPath();
+                for (var i = 0; i < path.getLength(); i++)
+                    bounds.extend(path.getAt(i));
+            } else {
+                bounds.extend(drawingObject.getPosition());
+            }
+        });
+        console.log('> fitting Bounds:', bounds);
+        map.fitBounds(bounds);
     }
 
     public static markerColorOptions = [

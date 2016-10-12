@@ -11,17 +11,17 @@ export enum MapPageMode {
 
 @Injectable()
 export class MapPageState {
-    
+
     constructor() {
         console.info('MapState constructor');
 
         // start the map page in LIST view
-        this.mode = MapPageMode.List;
+        //this.mode = MapPageMode.List;
         this.initialized = false;
     }
 
     public initialized: boolean;
-    public mode: MapPageMode;
+
     public zoom: number;
     public center: any;
 
