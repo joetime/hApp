@@ -131,7 +131,7 @@ export class MapPage {
                         this.mapOptions.zoom = this.STATE.zoom;
                         this.createMap();
 
-                    }, this.SETTINGS.mapLoadDelay);
+                    }, SettingsStatic.mapLoadDelay);
 
                     resolve(true);
                 }
@@ -145,7 +145,7 @@ export class MapPage {
                     LocationService.getCurrentPosition().then((v) => {
                         var latLng = new google.maps.LatLng(v.coords.latitude, v.coords.longitude);
                         this.mapOptions.center = latLng;
-                        this.mapOptions.zoom = this.SETTINGS.mapDefaultZoom
+                        this.mapOptions.zoom = SettingsStatic.mapDefaultZoom
                         this.createMap();
                         this.STATE.initialized = true;
                         this.gettingLocation = false;

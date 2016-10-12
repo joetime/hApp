@@ -1,85 +1,92 @@
 <ion-header>
 
-    <ion-navbar hideBackButton="true">
-        <button menuToggle>
+	<ion-navbar hideBackButton="true">
+		<button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
-        <ion-title>System</ion-title>
-    </ion-navbar>
+		<ion-title>System</ion-title>
+	</ion-navbar>
 </ion-header>
 
 <ion-content padding class="systemPage">
-    <h1> System </h1>
-    <ion-list>
-        <!-- Software Update-->
-        <ion-item>
-            <span (click)="showUpdateDetails=!showUpdateDetails">Software Updates</span>
+	<h1> System </h1>
+	<ion-list>
+		<!-- Software Update-->
+		<ion-item>
+			<span (click)="showUpdateDetails=!showUpdateDetails">Software Updates</span>
 
-            <div *ngIf="showUpdateDetails">
-                checkedForUpdate={{checkedForUpdate}}<br /> needsUpdate={{needsUpdate}}
-                <br /> deployNotAvailable={{deployNotAvailable}}
-            </div>
+			<div *ngIf="showUpdateDetails">
+				checkedForUpdate={{checkedForUpdate}}<br /> needsUpdate={{needsUpdate}}
+				<br /> deployNotAvailable={{deployNotAvailable}}
+			</div>
 
-            <span item-right>
+			<span item-right>
                 <!--<span *ngIf="!checkedForUpdate">click to check for updates</span>-->
-            <span *ngIf="checkedForUpdate && needsUpdate">Update available!</span>
-            <span *ngIf="checkedForUpdate && !needsUpdate && !deployNotAvailable">Software is up to date :)</span>
-            <span *ngIf="checkedForUpdate && deployNotAvailable">Update service not available</span>
+			<span *ngIf="checkedForUpdate && needsUpdate">Update available!</span>
+			<span *ngIf="checkedForUpdate && !needsUpdate && !deployNotAvailable">Software is up to date :)</span>
+			<span *ngIf="checkedForUpdate && deployNotAvailable">Update service not available</span>
 
-            <ion-spinner *ngIf="checking"></ion-spinner>
-            <button *ngIf="!checking && !checkedForUpdate" primary (click)="checkForUpdate_Click($event)">Check for Update</button>
-            <button *ngIf="needsUpdate" secondary (click)="doUpdate($event)">Update software</button>
-            </span>
-        </ion-item>
-        <ion-item>
-            Log Test
-            <span item-right>
+			<ion-spinner *ngIf="checking"></ion-spinner>
+			<button *ngIf="!checking && !checkedForUpdate" primary (click)="checkForUpdate_Click($event)">Check for Update</button>
+			<button *ngIf="needsUpdate" secondary (click)="doUpdate($event)">Update software</button>
+			</span>
+		</ion-item>
+		<ion-item>
+			Log Test
+			<span item-right>
                 <span *ngIf="logSuccess">Log success!</span>
-            <span *ngIf="logFail">Log fail :(</span>
+			<span *ngIf="logFail">Log fail :(</span>
 
-            <ion-spinner *ngIf="testingLog"></ion-spinner>
-            <button *ngIf="!testingLog" primary (click)="testLog_Click($event)">Test Log</button>
-            </span>
-        </ion-item>
-        <ion-item>
-            Geolocation Test
-            <span item-right>
+			<ion-spinner *ngIf="testingLog"></ion-spinner>
+			<button *ngIf="!testingLog" primary (click)="testLog_Click($event)">Test Log</button>
+			</span>
+		</ion-item>
+		<ion-item>
+			Geolocation Test
+			<span item-right>
                 <span *ngIf="locationSuccess">GPS success: {{locationString }}</span>
-            <span *ngIf="locationFail">GPS fail :(</span>
+			<span *ngIf="locationFail">GPS fail :(</span>
 
-            <ion-spinner *ngIf="gettingLocation"></ion-spinner>
-            <button *ngIf="!gettingLocation" primary (click)="testLocation_Click($event)">Test Location</button>
-            </span>
-        </ion-item>
-        <ion-item>
-            Camera Test
-            <span item-right>
+			<ion-spinner *ngIf="gettingLocation"></ion-spinner>
+			<button *ngIf="!gettingLocation" primary (click)="testLocation_Click($event)">Test Location</button>
+			</span>
+		</ion-item>
+		<ion-item>
+			Camera Test
+			<span item-right>
                 <span *ngIf="pictureSuccess">Camera success</span>
-            <span *ngIf="pictureFail">Camera fail :(</span>
-            <span *ngIf="cameraNotAvailable">Camera not availble on this device.</span>
-            <img *ngIf="pictureSuccess" src="{{base64Image}}" />
+			<span *ngIf="pictureFail">Camera fail :(</span>
+			<span *ngIf="cameraNotAvailable">Camera not availble on this device.</span>
+			<img *ngIf="pictureSuccess" src="{{base64Image}}" />
 
-            <ion-spinner *ngIf="gettingPicture"></ion-spinner>
-            <button *ngIf="!gettingPicture" primary (click)="testCamera_Click($event)">Test Camera</button>
-            </span>
-        </ion-item>
-        <ion-item>
-            Exception Handler
-            <span item-right>
+			<ion-spinner *ngIf="gettingPicture"></ion-spinner>
+			<button *ngIf="!gettingPicture" primary (click)="testCamera_Click($event)">Test Camera</button>
+			</span>
+		</ion-item>
+		<ion-item>
+			Exception Handler
+			<span item-right>
                
             <button primary (click)="testExceptionHandler_Click($event)">Text Exception Handler</button>
             </span>
-        </ion-item>
+		</ion-item>
 
-        <ion-item>
-            Upload Test {{uploadMessage}}
-            <span item-right>
+		<ion-item>
+			Upload Test {{uploadMessage}}
+			<span item-right>
             <input [(ngModel)]="userEnteredFileName" />
             <button primary (click)="testUpload_Click('text')">Text Upload</button>
             <button primary (click)="testUpload_Click('pic')">Pic Upload</button>
             </span>
-        </ion-item>
+		</ion-item>
 
-    </ion-list>
+		<ion-item>
+			Clear Database
+			<span item-right>
+			    <button danger (click)="clearDB_Click()">Clear Database</button>
+            </span>
+		</ion-item>
+
+	</ion-list>
 
 </ion-content>
