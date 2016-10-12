@@ -25,6 +25,10 @@ export class SettingsStatic {
     public static mapShowTransit = false;
     public static mapDefaultMarkerColor = 'blue'; // static for use in drawingservice
 
+    // possible colors
+    public static arrayOfColors = ['#ff0000', '#00ff00', '#0000ff', '#f0f000', '#f000f0']
+    public static markerColors = ['red', 'green', 'blue', 'yellow', 'purple'];
+
     public static mapOptions = {
         // default center/zoom shows all USA
         center: new google.maps.LatLng(37.07655337108474, -95.92028779999998),

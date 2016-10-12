@@ -30,59 +30,253 @@ export class MapPage {
     @ViewChild('map') mapElement: ElementRef;
     public editItem: any; // passed to form
 
+    // current object being edited
+    private _currentObject;
     // will hold the last item updated so we can 
     // highlight in interface
     public _lastUpdated: any;
 
-    map: any;
-    mapOptions: any;
-    mapLoading: boolean = false;
-    gettingLocation: boolean = false;
+    private map: any;
+    private mapOptions: any;
 
-    constructor(
-        public STATE: MapPageState,
-        public navCtrl: NavController,
-        //private location: LocationService,
-        private T: Toast,
-        private Comm: CommService,
-        private Drawing: DrawingService,
-        private PavingItem: PavingItemModel,
-        private PavingItemService: PavingItemService,
-        private Menu: MenuController,
-        private Zone: NgZone
-    ) {
+    // flags for spinners
+    public mapLoading: boolean = false;
+    public gettingLocation: boolean = false;
 
+    // array of colors
+    public arrayOfColors = SettingsStatic.arrayOfColors;
+    //public markerColors = ['red', 'green', 'blue', 'yellow', 'purple'];
+
+    // constructor
+    constructor(public STATE: MapPageState, public navCtrl: NavController, private T: Toast, private Comm: CommService, private Drawing: DrawingService, private PavingItem: PavingItemModel, private PavingItemService: PavingItemService, private Menu: MenuController, private Zone: NgZone) {
         console.info('MapPage constructor. initialized =', this.STATE.initialized);
-        // ionViewLoaded() will fire as well.
+
         this.mapOptions = SettingsStatic.mapOptions;
         this.mode = MapPageMode.List;
+        // ionViewLoaded() will fire as well.
     }
 
     // fired from the form (child directive)
-    public editComplete(b) {
+    public EditComplete_Hook(b) {
         console.log('MapPage editComplete', b);
         this.mode = MapPageMode.List;
 
         this._lastUpdated = b;
     }
 
-    public listMode() {
-        //this._currentObject = null;
-        // this.mode = MapPageMode.List;
-    }
-
-    // # Map Init, refresh
-    public recenter_Click() {
+    // Center on current location
+    public Recenter_Click() {
+        console.info('MapPage Recenter_Click()');
 
         let forceRecenter = true;
         this.loadMap(forceRecenter);
     }
 
+    // Reframe to show all drawingObjects
     public Reframe_Click() {
+        console.info('MapPage Reframe_Click()')
+
         DrawingService.CenterOnDrawingObjects(this.map, this.STATE.itemsList);
     }
 
+    public AddDrawingObject_Click(letter) {
+        if (letter == 'M') this.addMarker();
+        else if (letter == 'L') this.startPolyline();
+        else if (letter == 'P') this.startPolygon();
+    }
 
+    public ChangeColor_Click(color) {
+
+        if (this._currentObject) {
+
+            DrawingService.setColor(this._currentObject, color);
+
+            this.updateColor(this._currentObject, color);
+        }
+    }
+
+    public EndDrawingEdit_Click() {
+        // save any changes;
+        this.updatePath(this._currentObject);
+        this.updateQuantity(this._currentObject);
+
+        // clear events and set as not editble/dragable
+        google.maps.event.clearListeners(this.map, 'click');
+        DrawingService.setEditable(this._currentObject, false);
+
+        // clear state
+        //  this.mode = MapPageMode.List;
+        //this._currentObject = null;   
+        this.Menu.open('right');
+    }
+
+    public PavingItemList_Click(item) {
+        console.info('MapPage PavingItemList_Click()')
+
+        this.openItem(item);
+    }
+
+    public DeleteButton_Click() {
+        if (confirm('Are you sure you want to delete?')) {
+            this.delete(this._currentObject);
+        }
+    }
+
+
+
+    addMarker() {
+        console.info('MapPage addMarker()');
+
+        try {
+            let pavingItem: PavingItemModel = new PavingItemModel(0);
+            let marker = DrawingService.GetMarker(this.map);
+            DrawingService.setEditable(marker);
+            marker.addListener('click', (ev) => {
+                console.log('marker clicked');
+                this.Zone.run(() => {
+                    this.handleDrawingObjectClick(marker);
+                });
+            })
+
+            this._currentObject = marker;
+
+
+            // get path from marker object           
+            pavingItem.path = DrawingService.GetPathString(marker);
+
+            // add event listener (updates coords on dragend)
+            google.maps.event.addListener(marker, 'dragend', (v) => {
+                this.updatePath(marker)
+            });
+
+            // Save to server 
+            this.PavingItemService.Save(pavingItem).then((res) => {
+
+                // associate marker with data
+                marker.acgo = res;
+            },
+                (err) => {
+                    this.T.toast('!! error creating item !! ' + err);
+                    console.error('error creating item', err);
+                });
+
+            this.Comm.setPavingItem(pavingItem); // send to comm!
+
+            this.STATE.itemsList.splice(0, 0, marker); // push item to top of list
+
+            this.mode = MapPageMode.EditItem;
+
+        } catch (ex) {
+            this.T.toast('error creating marker:' + ex);
+        }
+    }
+
+    startPolyline() {
+        console.info('MapPage startPolyline()')
+
+        try {
+
+
+            let polyline = DrawingService.GetPoyline(this.map);
+            this._currentObject = polyline;
+            DrawingService.setEditable(polyline);
+
+            // (click) listener
+            polyline.addListener('click', (ev) => {
+                console.log('polyline clicked');
+                this.Zone.run(() => {
+                    this.handleDrawingObjectClick(polyline);
+                });
+            });
+            // (dragend) listener
+            polyline.addListener('dragend', () => {
+                this.updatePath(polyline);
+            });
+
+
+            let pavingItem = new PavingItemModel(1);
+
+
+            // Save to server 
+            this.PavingItemService.Save(pavingItem).then((res) => {
+
+                console.log('new item created');
+                // associate marker with data
+                polyline.acgo = res;
+
+                this.Comm.pavingItem = polyline.acgo; // load in form
+
+                this.STATE.itemsList.splice(0, 0, polyline); // push item to top of list
+
+                this.T.toast('Click on the map to draw your polyline.')
+
+                google.maps.event.addListener(this.map, 'click', (v) => {
+                    // push new path point
+                    var path = polyline.getPath();
+                    path.push(v.latLng);
+                    polyline.setPath(path);
+                    // save changes to DB
+                    //this.updatePath(polyline);
+                    //this.updateQuantity(polyline);
+                });
+
+
+
+                this.mode = MapPageMode.EditItem;
+            },
+                (err) => {
+                    this.T.toast('!! error creating item !! ' + err);
+                    console.error('error creating item', err);
+                });
+
+
+        } catch (ex) {
+            this.T.toast('Error adding polyline: ' + ex);
+            console.error(ex);
+        }
+    }
+
+    startPolygon() {
+        console.info('MapPage startPolygon()')
+
+        let polygon = DrawingService.GetPolygon(this.map);
+        this._currentObject = polygon;
+        DrawingService.setEditable(polygon);
+        polygon.addListener('click', (ev) => {
+            console.log('polygon clicked');
+            this.Zone.run(() => {
+                this.handleDrawingObjectClick(polygon);
+            });
+        });
+
+        // attach pavingItem data
+        let pavingItem = new PavingItemModel(2);
+
+
+        this.PavingItemService.Save(pavingItem).then((res) => {
+
+            console.log('new item created');
+            // associate marker with data
+            polygon.acgo = res;
+            this.Comm.pavingItem = polygon.acgo; // load in the form
+
+            this.STATE.itemsList.splice(0, 0, polygon); // push item to top of list
+
+            this.T.toast('Click on the map to draw your polygon.')
+
+            google.maps.event.addListener(this.map, 'click', (v) => {
+                // push new path point
+                var path = polygon.getPath();
+                path.push(v.latLng);
+                polygon.setPath(path);
+            });
+
+            this.mode = MapPageMode.EditItem;
+        },
+            (err) => {
+                this.T.toast('Error saving polygon')
+            });
+    }
 
     // Wait for ionic, then load the map
     ionViewLoaded() {
@@ -91,41 +285,7 @@ export class MapPage {
         this.loadMap(); // load first time only??
     }
 
-    loadData() {
-        console.log('MapPage loadData()');
-
-        this.PavingItemService.Get().then((d: any[]) => {
-
-            console.log('MapPage data recvd: ', d);
-
-            this.STATE.itemsList = [];
-
-            d.forEach((item) => {
-                var drawingObject;
-                let pavingItem: PavingItemModel = item;
-                console.log('restoring item...', item);
-
-                if (item.drawingObjectType == DrawingObjectType.MARKER) {
-                    drawingObject = DrawingService.GetMarker(this.map, item.path);
-                }
-                else if (item.drawingObjectType == DrawingObjectType.POLYLINE) {
-                    drawingObject = DrawingService.GetPoyline(this.map, item.path);
-                }
-                else {
-                    drawingObject = DrawingService.GetPolygon(this.map, item.path);
-                }
-
-                drawingObject.acgo = pavingItem;
-
-                this.STATE.itemsList.push(drawingObject);
-            });
-
-        }).catch((err) => { 'error getting data', err });
-    }
-
-
-
-    // dicide to use last known location/zoom, or current loc of device
+    // decide to use last known location/zoom, or current loc of device
     // sends proper mapOptions to createMap()
     loadMap(forceRecenter: boolean = false): Promise<boolean> {
         console.info('MapPage loadMap()')
@@ -187,6 +347,46 @@ export class MapPage {
 
     }
 
+    // go to database and load all shapes, then add them to the map
+    loadData() {
+        console.log('MapPage loadData()');
+
+        this.PavingItemService.Get().then((d: any[]) => {
+
+            console.log('MapPage data recvd: ', d);
+
+            this.STATE.itemsList = [];
+
+            d.forEach((item) => {
+                var drawingObject;
+                let pavingItem: PavingItemModel = item;
+                console.log('restoring item...', item);
+
+                if (item.drawingObjectType == DrawingObjectType.MARKER) {
+                    drawingObject = DrawingService.GetMarker(this.map, item.path);
+                    DrawingService.setColor(drawingObject, item.color);
+                }
+                else if (item.drawingObjectType == DrawingObjectType.POLYLINE) {
+                    drawingObject = DrawingService.GetPoyline(this.map, item.path, item.color);
+                }
+                else {
+                    drawingObject = DrawingService.GetPolygon(this.map, item.path, item.color);
+                }
+
+                drawingObject.addListener('click', () => {
+                    this.handleDrawingObjectClick(drawingObject);
+                })
+
+                drawingObject.acgo = pavingItem;
+
+                this.STATE.itemsList.push(drawingObject);
+            });
+
+        }).catch((err) => { 'error getting data', err });
+    }
+
+
+
     // Actually creates the map using the DIV#map 
     // - adds the bounds_changed listener
     createMap() {
@@ -198,7 +398,7 @@ export class MapPage {
         google.maps.event.addListener(this.map, 'bounds_changed', () => this.onBoundsChanged(this));
 
         // a click listener we can reuse for editing shapes
-        // google.maps.event.addListener(this.map, 'click', this.onMapClick);
+        //google.maps.event.addListener(this.map, 'mouseup', this.onMapClick);
 
         // re-draw makers from STATE
         this.loadData();
@@ -206,9 +406,8 @@ export class MapPage {
         this.mapLoading = false;
     }
 
-    onMapClick() { }
 
-    // when map bounds change, save the values in the STATE
+    // MAP event - when map bounds change, save the values in the STATE
     onBoundsChanged(ctrl: MapPage) {
         ctrl.STATE.center = {
             lat: ctrl.map.getCenter().lat(),
@@ -218,15 +417,16 @@ export class MapPage {
         ctrl.STATE.zoom = ctrl.map.getZoom();
     }
 
-
-    pavingItemList_Click(item) {
-        console.info('MapPage pavingItemList_Click()')
-
-        this.openItem(item);
-    }
-
     openItem(item) {
         console.log('opening item', item);
+
+        if (this._currentObject != null) {
+            // save any changes to shape
+            this.updatePath(this._currentObject);
+            this.updateQuantity(this._currentObject);
+
+            DrawingService.setEditable(this._currentObject, false);
+        }
 
         this._currentObject = item;
 
@@ -234,10 +434,21 @@ export class MapPage {
 
         DrawingService.CenterOnDrawingObject(this.map, this._currentObject);
 
+        if (this._currentObject.acgo.drawingObjectType == DrawingObjectType.MARKER) {
+            this._currentObject.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(() => {
+                this._currentObject.setAnimation(google.maps.Animation.NONE);
+            }, 2000);
+        }
+
         this.Comm.setPavingItem(item.acgo);
 
-        this.mode = MapPageMode.EditItem;
+        this.Zone.run(() => {
+            this.mode = MapPageMode.EditItem;
+        })
+
     }
+
 
     handleDrawingObjectClick(drawingObject) {
         //if (drawingObject == this._currentObject) return; // just ignore
@@ -245,156 +456,45 @@ export class MapPage {
         this.openItem(drawingObject);
     }
 
-    // # Markers, Lines, Polygons
-
-    public addMarker_Click() {
-        console.info('MapPage addMarker()')
-
-        try {
-            let pavingItem: PavingItemModel = new PavingItemModel(0);
-            let marker = DrawingService.GetMarker(this.map);
-            DrawingService.setEditable(marker);
-            marker.addListener('click', (ev) => {
-                console.log('marker clicked');
-                this.Zone.run(() => {
-                    this.handleDrawingObjectClick(marker);
-                });
-            })
-
-            this._currentObject = marker;
 
 
-            // get path from marker object           
-            pavingItem.path = DrawingService.GetPathString(marker);
-
-            // add event listener (updates coords on dragend)
-            google.maps.event.addListener(marker, 'dragend', (v) => {
-                this.updatePath(marker)
-            });
-
-            // Save to server 
-            this.PavingItemService.Save(pavingItem).then((res) => {
-
-                // associate marker with data
-                marker.acgo = res;
+    delete(drawingObject) {
+        var data = { id: drawingObject.acgo.id, deleted: true }
+        this.PavingItemService.Save(data).then(
+            (res) => {
+                console.log('item deleted');
+                drawingObject.setMap(null);
+                this.STATE.itemDeleted(drawingObject.acgo.id);
+                this.mode = MapPageMode.List;
+                //this.EditComplete_Hook(drawingObject.acgo.id);
+                this._currentObject = null; // clear model
             },
-                (err) => {
-                    this.T.toast('!! error creating item !! ' + err);
-                    console.error('error creating item', err);
-                });
-
-            this.Comm.setPavingItem(pavingItem); // send to comm!
-
-            this.STATE.itemsList.splice(0, 0, marker); // push item to top of list
-
-            this.mode = MapPageMode.EditItem;
-
-        } catch (ex) {
-            this.T.toast('error creating marker:' + ex);
-        }
+            (err) => {
+                this.T.toast('!! error saving item !!' + err)
+                console.error('error saving item', err);
+            });
     }
 
-    public addPolyline_Click() {
+    //update color
+    updateColor(drawingObject, color) {
 
-        try {
-            console.info('MapPage addPolyline()')
+        console.info('updatePath', drawingObject);
 
-            let polyline = DrawingService.GetPoyline(this.map);
-            this._currentObject = polyline;
-            DrawingService.setEditable(polyline);
+        var pathStr = DrawingService.GetPathString(drawingObject);
 
-            polyline.addListener('click', (ev) => {
-                console.log('polyline clicked');
-                this.Zone.run(() => {
-                    this.handleDrawingObjectClick(polyline);
-                });
-            });
-
-
-            let pavingItem = new PavingItemModel(1);
-
-
-            // Save to server 
-            this.PavingItemService.Save(pavingItem).then((res) => {
-
-                console.log('new item created');
-                // associate marker with data
-                polyline.acgo = res;
-
-                this.Comm.pavingItem = polyline.acgo; // load in form
-
-                this.STATE.itemsList.splice(0, 0, polyline); // push item to top of list
-
-                this.T.toast('Click on the map to draw your polyline.')
-
-                google.maps.event.addListener(this.map, 'click', (v) => {
-                    // push new path point
-                    var path = polyline.getPath();
-                    path.push(v.latLng);
-                    polyline.setPath(path);
-                    // save changes to DB
-                    //this.updatePath(polyline);
-                    //this.updateQuantity(polyline);
-                });
-
-                this.mode = MapPageMode.EditItem;
-            },
-                (err) => {
-                    this.T.toast('!! error creating item !! ' + err);
-                    console.error('error creating item', err);
-                });
-
-
-        } catch (ex) {
-            this.T.toast('Error adding polyline: ' + ex);
-            console.error(ex);
-        }
-    }
-
-    public addPolygon_Click() {
-        console.info('MapPage addPolygon()')
-
-        let polygon = DrawingService.GetPolygon(this.map);
-        this._currentObject = polygon;
-        DrawingService.setEditable(polygon);
-        polygon.addListener('click', (ev) => {
-            console.log('polygon clicked');
-            this.Zone.run(() => {
-                this.handleDrawingObjectClick(polygon);
-            });
-        });
-
-        // attach pavingItem data
-        let pavingItem = new PavingItemModel(2);
-
-
-        this.PavingItemService.Save(pavingItem).then((res) => {
-
-            console.log('new item created');
-            // associate marker with data
-            polygon.acgo = res;
-            this.Comm.pavingItem = polygon.acgo; // load in the form
-
-            this.STATE.itemsList.splice(0, 0, polygon); // push item to top of list
-
-            this.T.toast('Click on the map to draw your polygon.')
-
-            google.maps.event.addListener(this.map, 'click', (v) => {
-                // push new path point
-                var path = polygon.getPath();
-                path.push(v.latLng);
-                polygon.setPath(path);
-            });
-
-            this.mode = MapPageMode.EditItem;
+        this.PavingItemService.Save({ id: drawingObject.acgo.id, color: color }).then((res) => {
+            console.log('item saved, pathStr=', pathStr);
+            drawingObject.acgo.color = color;
         },
             (err) => {
-                this.T.toast('Error saving polygon')
+                this.T.toast('!! error saving item !!' + err)
+                console.error('error saving item', err);
             });
     }
 
     // handles the changing of paths (when DONE is clicked)
-    private updatePath(drawingObject) {
+    // saves to db
+    updatePath(drawingObject) {
 
         console.info('updatePath', drawingObject);
 
@@ -411,7 +511,7 @@ export class MapPage {
             });
     }
 
-    private updateQuantity(drawingObject) {
+    updateQuantity(drawingObject) {
         console.info('updateQuantity', drawingObject);
         var quantity = DrawingService.GetQuantity(drawingObject);
 
@@ -426,28 +526,12 @@ export class MapPage {
             });
     }
 
+    // restoreShapes() {
+    //     for (let entry of this.STATE.itemsList) {
+    //         console.log('redraw', entry);
+    //         entry.setMap(this.map);
+    //     }
+    // }
 
 
-    private _currentObject;
-    public endDrawingEdit() {
-        // save any changes;
-        this.updatePath(this._currentObject);
-        this.updateQuantity(this._currentObject);
-
-        // clear events and set as not editble/dragable
-        google.maps.event.clearListeners(this.map, 'click');
-        DrawingService.setEditable(this._currentObject, false);
-
-        // clear state
-        //  this.mode = MapPageMode.List;
-        //this._currentObject = null;   
-        this.Menu.open('right');
-    }
-
-    restoreShapes() {
-        for (let entry of this.STATE.itemsList) {
-            console.log('redraw', entry);
-            entry.setMap(this.map);
-        }
-    }
 }

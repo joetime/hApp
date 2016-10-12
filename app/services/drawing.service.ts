@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SettingsService } from './settings.service'
+import { SettingsStatic } from './settings.static'
 
 declare var google;
 
@@ -29,6 +29,36 @@ export class DrawingService {
         return path;
     }
 
+    // TODO: needs refactoring
+    public static setColor(drawingObject, color?: string) {
+
+        // if it's a marker...
+        if (!drawingObject.getPath) {
+            var iconStr;
+            // if no color specified, use default
+            if (!color || color.length == 0) {
+                iconStr = 'http://maps.google.com/mapfiles/ms/icons/' + SettingsStatic.mapDefaultMarkerColor + '-dot.png'
+            }
+            // if color is in hex, get a color name value
+            else if (color[0] == "#") {
+                var i = SettingsStatic.arrayOfColors.indexOf(color);
+                iconStr = 'http://maps.google.com/mapfiles/ms/icons/' + SettingsStatic.markerColors[i] + '-dot.png';
+            }
+            else {
+                iconStr = 'http://maps.google.com/mapfiles/ms/icons/' + color + '-dot.png';
+            }
+            drawingObject.setOptions({
+                icon: iconStr
+            });
+        }
+        else {
+            drawingObject.setOptions({
+                strokeColor: color,
+                fillColor: color // lines will ignore fillColor
+            });
+        }
+    }
+
     public static setEditable(drawingObject: any, editable: boolean = true) {
         if (drawingObject.setEditable) drawingObject.setEditable(editable);
         drawingObject.setDraggable(editable);
@@ -36,7 +66,7 @@ export class DrawingService {
 
     public static GetMarker(map, path?: any): any {
 
-        var iconStr = 'http://maps.google.com/mapfiles/ms/icons/' + SettingsService.mapDefaultMarkerColor + '-dot.png'
+        var iconStr = 'http://maps.google.com/mapfiles/ms/icons/' + SettingsStatic.mapDefaultMarkerColor + '-dot.png'
 
         let marker = new google.maps.Marker({
             map: map,
@@ -48,21 +78,34 @@ export class DrawingService {
         return marker;
     }
 
-    public static GetPoyline(map, path?: any): any {
+    public static GetPoyline(map, path?: any, color?: string): any {
 
-        return new google.maps.Polyline({
+        var options = {
             map: map,
             path: this.parsePath(path, []),
-        });
+        }
+
+        if (color) {
+            options['strokeColor'] = color;
+        }
+
+        return new google.maps.Polyline(options);
     }
 
-    public static GetPolygon(map, path?: any): any {
+    public static GetPolygon(map, path?: any, color?: string): any {
 
-        return new google.maps.Polygon({
+        var options: any = {
             map: map,
             animation: google.maps.Animation.DROP,
             path: this.parsePath(path, []),
-        });
+        }
+
+        if (color) {
+            options['strokeColor'] = color;
+            options['fillColor'] = color;
+        }
+
+        return new google.maps.Polygon(options);
     }
 
 
@@ -144,13 +187,4 @@ export class DrawingService {
         console.log('> fitting Bounds:', bounds);
         map.fitBounds(bounds);
     }
-
-    public static markerColorOptions = [
-        'red',
-        'green',
-        'blue',
-        'orange',
-        'yellow',
-        'purple'
-    ]
 }

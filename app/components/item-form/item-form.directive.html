@@ -1,117 +1,128 @@
 <div class="item-form" padding>
 
-    <!-- Photos -->
-    <ion-item>
-        <img width="30%" src="img/placeholder100x100.png" id="image1" (click)="thumbnail_Click($event, 1)" />
-        <img width="30%" src="img/placeholder100x100.png" id="image2" (click)="thumbnail_Click($event, 2)" />
-        <img width="30%" src="img/placeholder100x100.png" id="image3" (click)="thumbnail_Click($event, 3)" /> [{{model.file1}}][{{model.file2}}][{{model.file3}}]
-    </ion-item>
+	<!-- Photos -->
+	<ion-item>
+		<!-- Existing -->
+		<img *ngIf="model.file1" width="30%" src="https://files.backand.io/acgo/{{model.file1}}" (click)="thumbnail_Click($event, 1)"
+			style="top: -16px;position: relative;" />
+		<img *ngIf="model.file2" width="30%" src="https://files.backand.io/acgo/{{model.file2}}" (click)="thumbnail_Click($event, 2)"
+			style="top: -16px;position: relative;" />
+		<img *ngIf="model.file3" width="30%" src="https://files.backand.io/acgo/{{model.file3}}" (click)="thumbnail_Click($event, 3)"
+			style="top: -16px;position: relative;" />
 
-    <form>
-        <ion-list>
 
-            <!-- Name -->
-            <ion-item>
-                <ion-label stacked for="name">Name</ion-label>
-                <ion-input type="text" id="name" name="name" [(ngModel)]="model.name" required></ion-input>
-            </ion-item>
+		<img *ngIf="!model.file1" width="30%" src="img/placeholder100x100.png" id="image1" (click)="thumbnail_Click($event, 1)" />
+		<img *ngIf="!model.file2" width="30%" src="img/placeholder100x100.png" id="image2" (click)="thumbnail_Click($event, 2)" />
+		<img *ngIf="!model.file3" width="30%" src="img/placeholder100x100.png" id="image3" (click)="thumbnail_Click($event, 3)" />
+		<!--[{{model.file1}}][{{model.file2}}][{{model.file3}}]-->
+	</ion-item>
 
-            <!-- Critical (toggle) -->
-            <ion-item>
-                <ion-label for="critical"> Critical</ion-label>
-                <ion-toggle danger [(ngModel)]="model.critical" checked="false" name="critical" id="critical"></ion-toggle>
-            </ion-item>
+	<form>
+		<ion-list>
 
-            <!-- Identification Type (Sitework, ADA, Zone, etc)-->
-            <ion-item>
+			<!-- Name -->
+			<ion-item>
+				<ion-label stacked for="name">Name</ion-label>
+				<ion-input type="text" id="name" name="name" [(ngModel)]="model.name" required></ion-input>
+			</ion-item>
 
-                <ion-segment name="identificationType" [(ngModel)]="model.identificationType" (ngModelChange)="identificationType_Change()">
-                    <ion-segment-button *ngFor="let t of Options.identificationTypeOptions" [value]="t">
-                        {{t}}
-                    </ion-segment-button>
-                </ion-segment>
-            </ion-item>
+			<!-- Identification Type (Sitework, ADA, Zone, etc)-->
+			<ion-item>
 
-            <!-- Type (switched based identifcationType) -->
-            <ion-item>
-                <div class="list-item-label"> {{model.identificationItemType}} Type</div>
-                <span *ngFor="let t of typeOptions; let $index = index; trackBy: i">
+				<ion-segment name="identificationType" [(ngModel)]="model.identificationType" (ngModelChange)="identificationType_Change()">
+					<ion-segment-button *ngFor="let t of Options.identificationTypeOptions" [value]="t">
+						{{t}}
+					</ion-segment-button>
+				</ion-segment>
+			</ion-item>
+
+			<!-- Critical (toggle) -->
+			<ion-item *ngIf="model.identificationType != 'Zone'">
+				<ion-label for="critical"> Critical</ion-label>
+				<ion-toggle danger [(ngModel)]="model.critical" checked="false" name="critical" id="critical"></ion-toggle>
+			</ion-item>
+
+			<!-- Type (switched based identifcationType) -->
+			<ion-item>
+				<div class="list-item-label"> {{model.identificationItemType}} Type</div>
+				<span *ngFor="let t of typeOptions; let $index = index; trackBy: i">
                     <button type="button" [ngClass]="{ 'button-primary': t == model.type }" outline (click)="typeButton_Click(t)">
                         {{t}}
                     </button>
                     <br *ngIf="($index + 1) % 4 == 0" /><!-- break every 4 to prevent things from running off the page-->
                 </span>
-            </ion-item>
+			</ion-item>
 
-            <!-- Material (asphalt, concreted, etc) -->
-            <ion-item>
-                <div class="list-item-label"> Material </div>
+			<!-- Material (asphalt, concreted, etc) -->
+			<ion-item>
+				<div class="list-item-label"> Material </div>
 
-                <ion-segment name="material" [(ngModel)]="model.material">
-                    <ion-segment-button *ngFor="let t of Options.materialOptions" [value]="t">
-                        {{t}}
-                    </ion-segment-button>
-                </ion-segment>
+				<ion-segment name="material" [(ngModel)]="model.material">
+					<ion-segment-button *ngFor="let t of Options.materialOptions" [value]="t">
+						{{t}}
+					</ion-segment-button>
+				</ion-segment>
 
-            </ion-item>
+			</ion-item>
 
-            <!-- Failure Mode -->
-            <ion-item>
-                <div class="list-item-label"> Failure Mode(s) </div>
-                <span *ngFor="let t of Options.failureModeOptions; let $index = index; trackBy: i">
+			<!-- Failure Mode -->
+			<ion-item *ngIf="model.identificationType != 'Zone'">
+				<div class="list-item-label"> Failure Mode(s) </div>
+				<span *ngFor="let t of Options.failureModeOptions; let $index = index; trackBy: i">
                     <button type="button" [ngClass]="{ 'button-primary': model.failureMode[t] }" outline (click)="failureModeButton_Click(t)">
                         {{t}}
                     </button>
                     <br *ngIf="($index + 1) % 4 == 0" /><!-- break every 4 to prevent things from running off the page-->
-            </span>
-            </ion-item>
+            	</span>
+			</ion-item>
 
-            <!-- Rating (mild, moderate, severe)-->
-            <ion-item>
-                <ion-segment name="rating" [(ngModel)]="model.rating">
-                    <ion-segment-button *ngFor="let t of Options.ratingOptions" [value]="t">
-                        {{t}}
-                    </ion-segment-button>
-                </ion-segment>
-            </ion-item>
+			<!-- Rating (mild, moderate, severe)-->
+			<ion-item *ngIf="model.identificationType != 'Zone'">
+				<ion-segment name="rating" [(ngModel)]="model.rating">
+					<ion-segment-button *ngFor="let t of Options.ratingOptions" [value]="t">
+						{{t}}
+					</ion-segment-button>
+				</ion-segment>
+			</ion-item>
 
-            <!-- Failure Mode -->
-            <ion-item>
-                <div class="list-item-label"> Cause(s) </div>
-                <span *ngFor="let t of Options.causeOptions; let $index = index; trackBy: i">
+			<!-- Cause(s) -->
+			<ion-item *ngIf="model.identificationType != 'Zone'">
+				<div class="list-item-label"> Cause(s) </div>
+				<span *ngFor="let t of Options.causeOptions; let $index = index; trackBy: i">
                     <button type="button" [ngClass]="{ 'button-primary': model.cause[t] }" outline (click)="causeButton_Click(t)">
                         {{t}}
                     </button>
                     <br *ngIf="($index + 1) % 4 == 0" /><!-- break every 4 to prevent things from running off the page-->
                 </span>
-            </ion-item>
+			</ion-item>
 
 
-            <!-- Identification Type (Sitework, ADA, Zone, etc)-->
-            <ion-item>
-                <div class="list-item-label"> Recommended Repair </div>
-                <span *ngFor="let t of Options.recommendedRepairOptions; let $index = index; trackBy: i">
+			<!-- Recommended Repair -->
+			<ion-item *ngIf="model.identificationType != 'Zone'">
+				<div class="list-item-label"> Recommended Repair </div>
+				<span *ngFor="let t of Options.recommendedRepairOptions; let $index = index; trackBy: i">
                     <button type="button" [ngClass]="{ 'button-primary': model.recommendedRepair == t }" outline (click)="recommendedRepair_Change(t)">
                         {{t}}
                     </button>
-                    <br *ngIf="($index + 1) % 3 == 0" /><!-- break every 4 to prevent things from running off the page-->
+                    <br *ngIf="($index + 1) % 2 == 0" /><!-- break every 4 to prevent things from running off the page-->
                 </span>
-            </ion-item>
+			</ion-item>
 
 
-            <!-- Quantity -->
-            <ion-item>
-                <ion-label stacked for="quantity">Quantity</ion-label>
-                <ion-input type="number" id="quantity" name="quantity" [(ngModel)]="model.quantity" clearInput required></ion-input>
-            </ion-item>
+			<!-- Quantity -->
+			<ion-item>
+				<ion-label stacked for="quantity">Quantity ({{model.unit}})</ion-label>
+				<ion-input type="number" id="quantity" name="quantity" [(ngModel)]="model.quantity" clearInput required></ion-input>
+				<span ion-right></span>
+			</ion-item>
 
-        </ion-list>
+		</ion-list>
 
-        <button primary type="button" (click)="DoneButton_Click()">Done</button>
-        <button primary danger type="button">Delete</button>
+		<button primary type="button" (click)="DoneButton_Click()">Done</button>
+		<button primary danger type="button" (click)="DeleteButton_Click()">Delete</button>
 
-    </form>
-    <div padding class="debug">
-        {{diagnostic}}
-    </div>
+	</form>
+	<div padding class="debug">
+		{{diagnostic}}
+	</div>
 </div>

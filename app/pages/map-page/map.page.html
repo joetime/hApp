@@ -23,7 +23,7 @@
 
 			<!-- ITEMS -->
 			<ion-item-sliding *ngFor="let item of STATE.itemsList; let i = index">
-				<a ion-item (click)="pavingItemList_Click(item)">
+				<a ion-item (click)="PavingItemList_Click(item)">
 
 					<!-- SWITCH: icon for drawing type -->
 					<span item-left [ngSwitch]="item.acgo.drawingObjectType" style="width: 15px;">
@@ -42,9 +42,9 @@
 
 					<span item-right class="text-quiet"> <b>{{item.acgo.quantity | number:'1.0'}}</b> {{item.acgo.unit}} </span>
 				</a>
-				<ion-item-options>
-					<button danger (click)="deleteMarker_Click()">Delete</button>
-				</ion-item-options>
+				<!--<ion-item-options>
+					<button danger (click)="DeleteItem_Click(item)">Delete</button>
+				</ion-item-options>-->
 			</ion-item-sliding>
 
 		</ion-list>
@@ -54,7 +54,7 @@
 
 		<!-- FORM -->
 
-		<item-form pavingItem="editItem" *ngIf="mode == MapPageMode.EditItem" (onEditComplete)="editComplete(b)"></item-form>
+		<item-form pavingItem="editItem" *ngIf="mode == MapPageMode.EditItem" (onEditComplete)="EditComplete_Hook(b)"></item-form>
 
 	</ion-content>
 </ion-menu>
@@ -87,21 +87,30 @@
 				</div>
 				<!-- Buttons -->
 				<div padding *ngIf="mode == MapPageMode.EditItem">
-					<button primary (click)="endDrawingEdit()">Done</button>
+					<button primary (click)="EndDrawingEdit_Click()">Ok></button>
+					<hr />
+					<h6 class="mini-header">COLORS</h6>
+
+					<a *ngFor="let color of arrayOfColors" class="color-button" [ngStyle]="{ 'background-color' : color }" (click)="ChangeColor_Click(color)">&nbsp;</a>
+
+					<hr />
+					<button outline danger block (click)="DeleteButton_Click()">
+						<ion-icon name="trash"></ion-icon>
+					</button>
 				</div>
 				<div padding *ngIf="mode == MapPageMode.List">
 
-					<button outline block (click)="recenter_Click()">
+					<button outline block (click)="Recenter_Click()">
                         <ion-icon name="navigate" *ngIf="!gettingLocation"></ion-icon>
                         <ion-spinner *ngIf="gettingLocation"></ion-spinner>
                     </button>
-					<button outline block (click)="reframe_Click()">
+					<button outline block (click)="Reframe_Click()">
                         <ion-icon name="expand"></ion-icon>
                     </button>
 					<hr />
-					<button primary block (click)="addMarker_Click()"><ion-icon name="pin"></ion-icon></button>
-					<button primary block (click)="addPolyline_Click()"><ion-icon name="logo-steam" class="rotate-icon"></ion-icon></button>
-					<button primary block (click)="addPolygon_Click()"><ion-icon name="square-outline" class="rotate-icon"></ion-icon></button>
+					<button primary block (click)="AddDrawingObject_Click('M')"><ion-icon name="pin"></ion-icon></button>
+					<button primary block (click)="AddDrawingObject_Click('L')"><ion-icon name="logo-steam" class="rotate-icon"></ion-icon></button>
+					<button primary block (click)="AddDrawingObject_Click('P')"><ion-icon name="square-outline" class="rotate-icon"></ion-icon></button>
 				</div>
 			</ion-col>
 		</ion-row>

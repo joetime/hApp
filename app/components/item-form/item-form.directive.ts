@@ -86,6 +86,16 @@ export class ItemForm {
         this.model.recommendedRepair = t;
     }
 
+    public DeleteButton_Click() {
+        if (confirm('Are you sure you want to delete this item?')) {
+            this.model.deleted = true;
+            this.OnSubmit();
+            this.STATE.itemDeleted(this.model.id);
+            this.onEditComplete.emit(this.model.id);
+            this.model = null; // clear model
+        }
+    }
+
 
     submitted = false;
 
@@ -93,7 +103,6 @@ export class ItemForm {
         this.OnSubmit()
         this.onEditComplete.emit(this.model.id);
         this.model = null; // clear model
-
     }
 
     OnSubmit() {

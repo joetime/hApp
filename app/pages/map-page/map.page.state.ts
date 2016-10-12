@@ -27,4 +27,15 @@ export class MapPageState {
 
     public itemsList: any[] = []; // starts with empty list
 
+    public itemDeleted(id) {
+        for (var i = 0; i < this.itemsList.length; i++) {
+            if (this.itemsList[i].acgo.id == id) {
+                this.itemsList[i].setMap(null); // removes from map
+                this.itemsList.splice(i, 1);
+                return;
+            }
+
+        }
+    }
+
 }
