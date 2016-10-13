@@ -16,16 +16,20 @@ export class Backand {
   public getPavingItems() {
     console.info('Backand getPavingItems()', name);
 
-    var uuid = Device.device.uuid || 'dev';
+    // sort - backwards
+    let sort = JSON.stringify([{ "fieldName": "id", "order": "asc" }]);
 
-    // ignore deleted items
+    // filter - ignore deleted items, this device only
+    var uuid = Device.device.uuid || 'dev';
     var filter = JSON.stringify([
       { fieldName: "deleted", value: false, operator: "equals" },
       { fieldName: "uuid", value: uuid, operator: "equals" }]);
 
-    return this.http.get(this.api_url + '/1/objects/pavingItems?returnObject=true&filter=' + filter, {
-      headers: this.authHeader(),
-    })
+    return this.http.get(this.api_url + '/1/objects/pavingItems?returnObject=true' +
+      '&filter=' + filter +
+      '&sort=' + sort, {
+        headers: this.authHeader(),
+      })
       .map(res => res.json())
   }
 

@@ -8,9 +8,9 @@
 </ion-header>
 
 <ion-menu id="map-right-menu" side="right" [content]="mapcontent" type="overlay">
-	<ion-toolbar>
+	<!--<ion-toolbar>
 		<ion-title>Edit Item</ion-title>
-	</ion-toolbar>
+	</ion-toolbar>-->
 	<ion-content>
 
 
@@ -18,12 +18,36 @@
 
 		<ion-list *ngIf="mode == MapPageMode.List">
 			<ion-list-header>
-				{{STATE.itemsList.length}} Items<br /> {{_lastUpdated}}
+				{{STATE.itemsList.length}} Items
 			</ion-list-header>
+			<ion-item>
 
+				<ion-segment [(ngModel)]="filter">
+					<ion-segment-button value="">
+						All
+					</ion-segment-button>
+					<ion-segment-button value="Zone">
+						Zone
+					</ion-segment-button>
+					<ion-segment-button value="Sitework">
+						Sitework
+					</ion-segment-button>
+					<ion-segment-button value="ADA">
+						ADA
+					</ion-segment-button>
+					<ion-segment-button value="Core Sample">
+						Core
+					</ion-segment-button>
+					<ion-segment-button value="Other">
+						Other
+					</ion-segment-button>
+				</ion-segment>
+
+			</ion-item>
 			<!-- ITEMS -->
 			<ion-item-sliding *ngFor="let item of STATE.itemsList; let i = index">
-				<a ion-item (click)="PavingItemList_Click(item)">
+
+				<a ion-item *ngIf="!filter || filter == item.acgo.identificationType" (click)="PavingItemList_Click(item)">
 
 					<!-- SWITCH: icon for drawing type -->
 					<span item-left [ngSwitch]="item.acgo.drawingObjectType" style="width: 15px;font-weight:bold" [ngStyle]="{ 'color': item.acgo.color || 'black' }">
@@ -95,7 +119,7 @@
 					<a *ngFor="let color of arrayOfColors" class="color-button" [ngStyle]="{ 'background-color' : color }" (click)="ChangeColor_Click(color)">&nbsp;</a>
 
 					<hr />
-					<button primary block (click)="EditComplete_Click()">Ok</button>
+					<button primary block (click)="EditComplete_Click()">Save</button>
 					<button outline danger block (click)="DeleteButton_Click()">
 						<ion-icon name="trash"></ion-icon>
 					</button>
@@ -115,6 +139,10 @@
 					<button primary block (click)="AddDrawingObject_Click('P')"><ion-icon name="square-outline" class="rotate-icon"></ion-icon></button>
 				</div>
 			</ion-col>
+
+
+
+
 		</ion-row>
 	</ion-grid>
 
