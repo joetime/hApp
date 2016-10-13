@@ -20,7 +20,7 @@ export class Backand {
     let sort = JSON.stringify([{ "fieldName": "id", "order": "asc" }]);
 
     // filter - ignore deleted items, this device only
-    var uuid = Device.device.uuid || 'dev';
+    var uuid = Device.device.uuid || '3A8C8BE2-5F00-46B8-BAEE-39C5A847C8B5';
     var filter = JSON.stringify([
       { fieldName: "deleted", value: false, operator: "equals" },
       { fieldName: "uuid", value: uuid, operator: "equals" }]);
@@ -37,7 +37,7 @@ export class Backand {
     console.info('Backand addPavingItem()', name);
 
     // add uuid
-    var uuid = Device.device.uuid || 'dev';
+    var uuid = Device.device.uuid || '3A8C8BE2-5F00-46B8-BAEE-39C5A847C8B5';
     item.uuid = uuid;
 
     let data = JSON.stringify(item);
@@ -76,7 +76,7 @@ export class Backand {
     console.info('Backand addProject()', name);
 
     // tag with uuid
-    var uuid = Device.device.uuid || 'dev';
+    var uuid = Device.device.uuid || '3A8C8BE2-5F00-46B8-BAEE-39C5A847C8B5';
     projectInfo.uuid = uuid;
 
     let data = JSON.stringify(projectInfo);
@@ -92,7 +92,7 @@ export class Backand {
 
   public getProjects() {
 
-    var uuid = Device.device.uuid || 'dev';
+    var uuid = Device.device.uuid || '3A8C8BE2-5F00-46B8-BAEE-39C5A847C8B5';
 
     // ignore deleted items, only for this device
     var filter = JSON.stringify([
