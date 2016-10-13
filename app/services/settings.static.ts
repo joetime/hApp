@@ -23,8 +23,9 @@ export class SettingsStatic {
     public static mapLoadDelay = 500;
     public static mapShowPoi = false;
     public static mapShowTransit = false;
+    // shapes
     public static mapDefaultMarkerColor = 'blue'; // static for use in drawingservice
-
+    public static defaultPolylineStrokeWeight = 6;
     // possible colors
     public static arrayOfColors = ['#ff0000', '#00ff00', '#0000ff', '#f0f000', '#f000f0']
     public static markerColors = ['red', 'green', 'blue', 'yellow', 'purple'];
