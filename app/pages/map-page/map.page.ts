@@ -1,4 +1,5 @@
 import { Component, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Device } from 'ionic-native';
 import { NavController, NavParams, MenuController } from 'ionic-angular';
 // Services
 //import { SettingsService } from '../../services/settings.service';
@@ -48,17 +49,24 @@ export class MapPage {
     //public markerColors = ['red', 'green', 'blue', 'yellow', 'purple'];
 
     // constructor
-    constructor(public STATE: MapPageState, public navCtrl: NavController, private T: Toast, private Comm: CommService, private Drawing: DrawingService, private PavingItem: PavingItemModel, private PavingItemService: PavingItemService, private Menu: MenuController, private Zone: NgZone) {
+    constructor(public STATE: MapPageState, public navCtrl: NavController, private T: Toast, private Comm: CommService, private Drawing: DrawingService, private PavingItem: PavingItemModel, private PavingItemService: PavingItemService, private Menu: MenuController, private Zone: NgZone, private LOG: LogService) {
+
         console.info('MapPage constructor. initialized =', this.STATE.initialized);
 
         this.mapOptions = SettingsStatic.mapOptions;
         this.mode = MapPageMode.List;
         // ionViewLoaded() will fire as well.
+
+        this.LOG.log('Device.device', Device.device);
     }
 
     // fired from the form (child directive)
     public EditComplete_Hook(b) {
         console.log('MapPage editComplete', b);
+
+        DrawingService.setEditable(this._currentObject, false);
+
+        this._currentObject = null;
         this.mode = MapPageMode.List;
 
         this._lastUpdated = b;
@@ -95,6 +103,21 @@ export class MapPage {
         }
     }
 
+    // finish draw, don't open details
+    public EditComplete_Click() {
+        // save any changes;
+        this.updatePath(this._currentObject);
+        this.updateQuantity(this._currentObject);
+
+        // clear events and set as not editble/dragable
+        google.maps.event.clearListeners(this.map, 'click');
+        DrawingService.setEditable(this._currentObject, false);
+
+        this._currentObject = null;
+        this.mode = MapPageMode.List;
+    }
+
+    // finish draw and open details
     public EndDrawingEdit_Click() {
         // save any changes;
         this.updatePath(this._currentObject);
@@ -104,9 +127,6 @@ export class MapPage {
         google.maps.event.clearListeners(this.map, 'click');
         DrawingService.setEditable(this._currentObject, false);
 
-        // clear state
-        //  this.mode = MapPageMode.List;
-        //this._currentObject = null;   
         this.Menu.open('right');
     }
 
@@ -138,9 +158,6 @@ export class MapPage {
                 });
             })
 
-            this._currentObject = marker;
-
-
             // get path from marker object           
             pavingItem.path = DrawingService.GetPathString(marker);
 
@@ -150,21 +167,25 @@ export class MapPage {
             });
 
             // Save to server 
-            this.PavingItemService.Save(pavingItem).then((res) => {
+            this.PavingItemService.Save(pavingItem).then(
+                (res) => {
 
-                // associate marker with data
-                marker.acgo = res;
-            },
+                    // associate marker with data
+                    marker.acgo = res;
+
+                    this.Comm.setPavingItem(pavingItem); // send to comm!
+
+                    this.STATE.itemsList.splice(0, 0, marker); // push item to top of list
+
+                    this._currentObject = marker;
+                    this.mode = MapPageMode.EditItem;
+                },
                 (err) => {
                     this.T.toast('!! error creating item !! ' + err);
                     console.error('error creating item', err);
                 });
 
-            this.Comm.setPavingItem(pavingItem); // send to comm!
 
-            this.STATE.itemsList.splice(0, 0, marker); // push item to top of list
-
-            this.mode = MapPageMode.EditItem;
 
         } catch (ex) {
             this.T.toast('error creating marker:' + ex);
@@ -184,8 +205,9 @@ export class MapPage {
             // (click) listener
             polyline.addListener('click', (ev) => {
                 console.log('polyline clicked');
+
                 this.Zone.run(() => {
-                    this.handleDrawingObjectClick(polyline);
+                    this.handleDrawingObjectClick(polyline, ev);
                 });
             });
             // (dragend) listener
@@ -220,8 +242,7 @@ export class MapPage {
                     //this.updateQuantity(polyline);
                 });
 
-
-
+                this._currentObject = polyline;
                 this.mode = MapPageMode.EditItem;
             },
                 (err) => {
@@ -242,10 +263,12 @@ export class MapPage {
         let polygon = DrawingService.GetPolygon(this.map);
         this._currentObject = polygon;
         DrawingService.setEditable(polygon);
+
         polygon.addListener('click', (ev) => {
             console.log('polygon clicked');
+
             this.Zone.run(() => {
-                this.handleDrawingObjectClick(polygon);
+                this.handleDrawingObjectClick(polygon, ev);
             });
         });
 
@@ -271,6 +294,7 @@ export class MapPage {
                 polygon.setPath(path);
             });
 
+            this._currentObject = polygon;
             this.mode = MapPageMode.EditItem;
         },
             (err) => {
@@ -373,8 +397,8 @@ export class MapPage {
                     drawingObject = DrawingService.GetPolygon(this.map, item.path, item.color);
                 }
 
-                drawingObject.addListener('click', () => {
-                    this.handleDrawingObjectClick(drawingObject);
+                drawingObject.addListener('click', (ev) => {
+                    this.handleDrawingObjectClick(drawingObject, ev);
                 })
 
                 drawingObject.acgo = pavingItem;
@@ -450,9 +474,22 @@ export class MapPage {
     }
 
 
-    handleDrawingObjectClick(drawingObject) {
-        //if (drawingObject == this._currentObject) return; // just ignore
+    handleDrawingObjectClick(drawingObject, ev?: any) {
 
+        console.log('handleDrawingObjectClick:', drawingObject);
+        console.log('handleDrawingObjectClick event:', ev);
+
+        if (this.mode == MapPageMode.EditItem && this._currentObject != drawingObject) {
+            console.log('> click IGNORED, add to path?...');
+            if (this._currentObject.getPath) {
+                var path = this._currentObject.getPath();
+                path.push(ev.latLng);
+                this._currentObject.setPath(path);
+                this.updatePath(this._currentObject);
+                this.updateQuantity(this._currentObject);
+            }
+            return;
+        }
         this.openItem(drawingObject);
     }
 
@@ -525,13 +562,5 @@ export class MapPage {
                 console.error('error saving item', err);
             });
     }
-
-    // restoreShapes() {
-    //     for (let entry of this.STATE.itemsList) {
-    //         console.log('redraw', entry);
-    //         entry.setMap(this.map);
-    //     }
-    // }
-
 
 }

@@ -26,11 +26,12 @@
 				<a ion-item (click)="PavingItemList_Click(item)">
 
 					<!-- SWITCH: icon for drawing type -->
-					<span item-left [ngSwitch]="item.acgo.drawingObjectType" style="width: 15px;">
-                        <ion-icon *ngSwitchCase="0" name="pin"></ion-icon>
-                        <ion-icon *ngSwitchCase="1" name="logo-steam" class="rotate-icon"></ion-icon>
-                        <ion-icon *ngSwitchCase="2" name="square-outline" class="rotate-icon"></ion-icon>
-                    </span>
+					<span item-left [ngSwitch]="item.acgo.drawingObjectType" style="width: 15px;font-weight:bold" [ngStyle]="{ 'color': item.acgo.color || 'black' }">
+							<ion-icon *ngSwitchCase="0" name="pin"></ion-icon>
+							<ion-icon *ngSwitchCase="1" name="logo-steam" class="rotate-icon"></ion-icon>
+							<ion-icon *ngSwitchCase="2" name="square" class="rotate-icon"></ion-icon>
+						</span>
+
 
 					<span *ngIf="_lastUpdated && item.acgo.id === _lastUpdated.id">
                         ****
@@ -87,13 +88,14 @@
 				</div>
 				<!-- Buttons -->
 				<div padding *ngIf="mode == MapPageMode.EditItem">
-					<button primary (click)="EndDrawingEdit_Click()">Ok></button>
+					<button primary (click)="EndDrawingEdit_Click()">Info></button>
 					<hr />
 					<h6 class="mini-header">COLORS</h6>
 
 					<a *ngFor="let color of arrayOfColors" class="color-button" [ngStyle]="{ 'background-color' : color }" (click)="ChangeColor_Click(color)">&nbsp;</a>
 
 					<hr />
+					<button primary block (click)="EditComplete_Click()">Ok</button>
 					<button outline danger block (click)="DeleteButton_Click()">
 						<ion-icon name="trash"></ion-icon>
 					</button>
