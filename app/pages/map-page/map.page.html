@@ -93,9 +93,12 @@
 			<!-- The Map -->
 
 			<ion-col width-90 id="map-col">
+
 				<div #map id="map" class="hide-on-keyboard-open">
 					<ion-spinner id="map-spinner" *ngIf="mapLoading"></ion-spinner>
 				</div>
+				<div id="mapFloat" *ngIf="FloatMessage()">{{FloatMessage()}} &nbsp;&nbsp;&nbsp; <a (click)="EditComplete_Click()">DONE</a></div>
+
 			</ion-col>
 
 

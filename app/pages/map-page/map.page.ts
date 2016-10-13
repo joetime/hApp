@@ -142,6 +142,21 @@ export class MapPage {
         }
     }
 
+    public FloatMessage() {
+        var msg = '';
+        if (this._currentObject) {
+            msg = 'Editing ';
+
+            if (this._currentObject.acgo.drawingObjectType == DrawingObjectType.MARKER) msg += 'Marker';
+            if (this._currentObject.acgo.drawingObjectType == DrawingObjectType.POLYGON) msg += 'Polygon';
+            if (this._currentObject.acgo.drawingObjectType == DrawingObjectType.POLYLINE) msg += 'Line';
+
+            if (this._currentObject.acgo.name) msg += ": " + this._currentObject.acgo.name;
+
+        }
+
+        return msg;
+    }
 
 
     addMarker() {

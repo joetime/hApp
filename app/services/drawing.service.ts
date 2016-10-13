@@ -83,7 +83,7 @@ export class DrawingService {
         var options = {
             map: map,
             path: this.parsePath(path, []),
-            strokeWeight: 6
+            strokeWeight: SettingsStatic.defaultPolylineStrokeWeight
         }
 
         if (color) {

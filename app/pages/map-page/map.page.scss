@@ -67,3 +67,13 @@ h6.mini-header {
     text-align: center;
     color: #888;
 }
+
+#mapFloat {
+    padding: 10px;
+    background-color: yellow;
+    z-index: 100;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    box-shadow: 3px 3px 10px #888888;
+}
