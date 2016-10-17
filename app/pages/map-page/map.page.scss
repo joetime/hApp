@@ -53,13 +53,14 @@
 }
 
 .color-button {
-    display: block;
+    display: inline-block;
     text-align: center;
     padding: 14px 8px;
     border: 0;
-    margin: 5px 0px;
+    margin: 5px 5px;
     border-radius: 4px;
     color: white;
+    width: 40%;
 }
 
 h6.mini-header {

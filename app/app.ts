@@ -88,9 +88,10 @@ class MyApp {
     // used for an example of ngFor and navigation
     this.pages = [
       { title: 'Home', component: HomePage },
-      { title: 'Main', component: MainPage },
-      { title: 'System', component: SystemPage },
       { title: 'Map', component: MapPage },
+      //{ title: 'Main', component: MainPage },
+      { title: 'System', component: SystemPage },
+
       { title: 'Logs', component: LogsPage },
       /*{ title: 'Page uno', component: Page1 },
       { title: 'Page dos', component: Page2 },*/

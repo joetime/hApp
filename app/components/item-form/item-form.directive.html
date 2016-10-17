@@ -104,7 +104,7 @@
                     <button type="button" [ngClass]="{ 'button-primary': model.recommendedRepair == t }" outline (click)="recommendedRepair_Change(t)">
                         {{t}}
                     </button>
-                    <br *ngIf="($index + 1) % 2 == 0" /><!-- break every 4 to prevent things from running off the page-->
+                    <br *ngIf="($index + 1) % 2 == 0" /><!-- break every 2 to prevent things from running off the page-->
                 </span>
 			</ion-item>
 
@@ -122,7 +122,7 @@
 		<button primary danger type="button" (click)="DeleteButton_Click()">Delete</button>
 
 	</form>
-	<div padding class="debug">
+	<!--<div padding class="debug">
 		{{diagnostic}}
-	</div>
+	</div>-->
 </div>

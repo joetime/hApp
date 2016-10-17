@@ -145,14 +145,25 @@ export class MapPage {
     public FloatMessage() {
         var msg = '';
         if (this._currentObject) {
-            msg = 'Editing ';
 
-            if (this._currentObject.acgo.drawingObjectType == DrawingObjectType.MARKER) msg += 'Marker';
-            if (this._currentObject.acgo.drawingObjectType == DrawingObjectType.POLYGON) msg += 'Polygon';
-            if (this._currentObject.acgo.drawingObjectType == DrawingObjectType.POLYLINE) msg += 'Line';
+            // just starting a shape
+            if (!this._currentObject.acgo) {
+                msg = "...";
+            }
+            else {
+                msg = 'Editing ';
 
-            if (this._currentObject.acgo.name) msg += ": " + this._currentObject.acgo.name;
+                if (this._currentObject.acgo.drawingObjectType == DrawingObjectType.MARKER) msg += 'Marker';
+                if (this._currentObject.acgo.drawingObjectType == DrawingObjectType.POLYGON) msg += 'Polygon';
+                if (this._currentObject.acgo.drawingObjectType == DrawingObjectType.POLYLINE) msg += 'Line';
 
+                if (this._currentObject.acgo.name) msg += ": " + this._currentObject.acgo.name;
+
+                if (this._currentObject.getPath) {
+                    var q = DrawingService.GetQuantity(this._currentObject);
+                    msg += ' (' + q + ' ' + this._currentObject.acgo.unit + ')';
+                }
+            }
         }
 
         return msg;
@@ -212,7 +223,6 @@ export class MapPage {
 
         try {
 
-
             let polyline = DrawingService.GetPoyline(this.map);
             this._currentObject = polyline;
             DrawingService.setEditable(polyline);
@@ -227,6 +237,7 @@ export class MapPage {
             });
             // (dragend) listener
             polyline.addListener('dragend', () => {
+                console.log('polyline dragend');
                 this.updatePath(polyline);
             });
 
@@ -245,7 +256,7 @@ export class MapPage {
 
                 this.STATE.itemsList.splice(0, 0, polyline); // push item to top of list
 
-                this.T.toast('Click on the map to draw your polyline.')
+                //this.T.toast('Click on the map to draw your polyline.')
 
                 google.maps.event.addListener(this.map, 'click', (v) => {
                     // push new path point
@@ -300,7 +311,7 @@ export class MapPage {
 
             this.STATE.itemsList.splice(0, 0, polygon); // push item to top of list
 
-            this.T.toast('Click on the map to draw your polygon.')
+            //this.T.toast('Click on the map to draw your polygon.')
 
             google.maps.event.addListener(this.map, 'click', (v) => {
                 // push new path point

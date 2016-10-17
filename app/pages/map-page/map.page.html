@@ -92,7 +92,7 @@
 
 			<!-- The Map -->
 
-			<ion-col width-90 id="map-col">
+			<ion-col width-80 id="map-col">
 
 				<div #map id="map" class="hide-on-keyboard-open">
 					<ion-spinner id="map-spinner" *ngIf="mapLoading"></ion-spinner>
@@ -106,40 +106,43 @@
 
 			<!-- Right toolbar -->
 
-			<ion-col width-10>
-				<!-- Open Menu -->
-				<div padding>
+			<ion-col width-20>
+
+				<div *ngIf="mode == MapPageMode.List">
+
+					<!-- Open list -->
 					<button ion-button block menuToggle="right">
                         <ion-icon name="menu"></ion-icon>
                     </button>
-				</div>
-				<!-- Buttons -->
-				<div padding *ngIf="mode == MapPageMode.EditItem">
-					<button primary (click)="EndDrawingEdit_Click()">Info></button>
-					<hr />
-					<h6 class="mini-header">COLORS</h6>
 
+					<!-- loc/recenter buttons -->
+					<button outline (click)="Recenter_Click()">
+                        <ion-icon name="navigate" *ngIf="!gettingLocation"></ion-icon>
+                        <ion-spinner *ngIf="gettingLocation"></ion-spinner>
+                    </button>
+					<button outline (click)="Reframe_Click()">
+                        <ion-icon name="expand"></ion-icon>
+                    </button>
+
+					<hr />
+
+					<!-- Add shapes buttons -->
+					<button primary block (click)="AddDrawingObject_Click('M')"><ion-icon name="pin"></ion-icon></button>
+					<button primary block (click)="AddDrawingObject_Click('L')"><ion-icon name="logo-steam" class="rotate-icon"></ion-icon></button>
+					<button primary block (click)="AddDrawingObject_Click('P')"><ion-icon name="square-outline" class="rotate-icon"></ion-icon></button>
+				</div>
+
+				<!-- Edit Shape buttons -->
+				<div *ngIf="mode == MapPageMode.EditItem">
+					<button primary block (click)="EndDrawingEdit_Click()">Info></button>
+
+					<!-- Color Buttons -->
 					<a *ngFor="let color of arrayOfColors" class="color-button" [ngStyle]="{ 'background-color' : color }" (click)="ChangeColor_Click(color)">&nbsp;</a>
 
-					<hr />
 					<button primary block (click)="EditComplete_Click()">Save</button>
 					<button outline danger block (click)="DeleteButton_Click()">
 						<ion-icon name="trash"></ion-icon>
 					</button>
-				</div>
-				<div padding *ngIf="mode == MapPageMode.List">
-
-					<button outline block (click)="Recenter_Click()">
-                        <ion-icon name="navigate" *ngIf="!gettingLocation"></ion-icon>
-                        <ion-spinner *ngIf="gettingLocation"></ion-spinner>
-                    </button>
-					<button outline block (click)="Reframe_Click()">
-                        <ion-icon name="expand"></ion-icon>
-                    </button>
-					<hr />
-					<button primary block (click)="AddDrawingObject_Click('M')"><ion-icon name="pin"></ion-icon></button>
-					<button primary block (click)="AddDrawingObject_Click('L')"><ion-icon name="logo-steam" class="rotate-icon"></ion-icon></button>
-					<button primary block (click)="AddDrawingObject_Click('P')"><ion-icon name="square-outline" class="rotate-icon"></ion-icon></button>
 				</div>
 			</ion-col>
 
