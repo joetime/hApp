@@ -444,6 +444,9 @@ export class MapPage {
 
         this.map = new google.maps.Map(this.mapElement.nativeElement, this.mapOptions);
 
+        this.map.setTilt(0); // eliminate 45 degree mode
+
+
         // listen for changes to the center, and store that value in the MapPageState
         google.maps.event.addListener(this.map, 'bounds_changed', () => this.onBoundsChanged(this));
 

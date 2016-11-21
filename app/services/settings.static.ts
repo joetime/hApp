@@ -19,7 +19,7 @@ export class SettingsStatic {
     public static GeolocationTimeout = 10000;
 
     // Google Maps
-    public static mapDefaultZoom = 17;
+    public static mapDefaultZoom = 18;
     public static mapLoadDelay = 500;
     public static mapShowPoi = false;
     public static mapShowTransit = false;
@@ -35,11 +35,12 @@ export class SettingsStatic {
         center: new google.maps.LatLng(37.07655337108474, -95.92028779999998),
         zoom: 4,
 
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeId: google.maps.MapTypeId.SATELLITE,
 
         // controls
         scaleControl: true,
-        rotateControl: true,
+        rotateControl: false,
+        //tiltControl: false,
         //disableDefaultUI: true,
         zoomControlOptions: {
             position: google.maps.ControlPosition.LEFT_TOP
