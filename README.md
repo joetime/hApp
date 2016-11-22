@@ -6,7 +6,9 @@
 - it appears not to have saved items
 - You can zoom in rather close, but when you attempt to draw at the closest zoom level, it backs out to a further point.  
     If possible, can the drawing tools be used at the closest zoom level to get the accuracy we need?
-- We discussed locking this into overhead view, not skewed
+
+----
+- *OK!* We discussed locking this into overhead view, not skewed
 
 
 

@@ -74,7 +74,7 @@ class MyApp {
 
   @ViewChild(Nav) nav: Nav; // Angular access to the Nav component
 
-  rootPage: any = MapPage;
+  rootPage: any = HomePage;
 
   // Array of pages to include in the left menu
   pages: Array<{ title: string, component: any }>;
@@ -87,7 +87,7 @@ class MyApp {
 
     // used for an example of ngFor and navigation
     this.pages = [
-      { title: 'Home', component: HomePage },
+      { title: 'Project Data', component: HomePage },
       { title: 'Map', component: MapPage },
       //{ title: 'Main', component: MainPage },
       { title: 'System', component: SystemPage },

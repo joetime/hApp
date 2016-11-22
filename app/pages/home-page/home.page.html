@@ -3,15 +3,76 @@
         <button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-        <ion-title>AssetCALC Go</ion-title>
+        <ion-title>Project Data</ion-title>
     </ion-navbar>
 </ion-header>
 
 <ion-content padding class="home-page">
     <div padding class="text-center">
-        <h1>AssetCALC Go</h1>
-        <hr />
-        <button>New Project...</button><br />
-        <a button (click)="Resume_Click()">Resume</a>
+        <h1>Walgreens Store #{{projectData.storeNumber}}</h1>
+        <ion-list>
+            <ion-item>
+                <ion-label floating>Store #</ion-label>
+                <ion-input type="text" [(ngModel)]="projectData.storeNumber"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Address</ion-label>
+                <ion-input type="text" [(ngModel)]="projectData.address"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label stacked>Survey Date</ion-label>
+                <ion-datetime displayFormat="MMMM D YYYY" [(ngModel)]="projectData.surveyDate"></ion-datetime>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Surveyor</ion-label>
+                <ion-input type="text" [(ngModel)]="projectData.surveyor"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Total Paved Area (SF)</ion-label>
+                <ion-input type="number" [(ngModel)]="projectData.totalPavedArea" (ngChange)="calculatePercentage"></ion-input>
+                <span item-right><button>Map &gt;</button></span>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Repair/Replace</ion-label>
+                <ion-select [(ngModel)]="projectData.recommendation">
+                    <ion-option value="Repair">Repair</ion-option>
+                    <ion-option value="Replace">Replace</ion-option>
+                    <ion-option value="PartialReplace">Partial Replacement</ion-option>
+                </ion-select>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Total Recommended {{recommendation}} Area (SF)</ion-label>
+                <ion-input type="number" [(ngModel)]="projectData.totalRecommendedArea" (ngChange)="calculatePercentage"></ion-input>
+                <span item-right><button>Map &gt;</button></span>
+            </ion-item>
+
+            <!--<ion-item>
+                <ion-label floating>% of Asphalt Recommended for Repair/Replacement</ion-label>
+                <ion-input type="number" [(ngModel)]="projectData.totalRecommendedPercentage"></ion-input>
+                <span item-right><button>Map &gt;</button></span>
+            </ion-item>
+            -->
+            <ion-item>
+                <ion-label floating>Total Number of Parking Spaces (inc. handicapped)</ion-label>
+                <ion-input type="number" [(ngModel)]="projectData.totalParkingSpaces"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Number of Handicapped Spaces</ion-label>
+                <ion-input type="number" [(ngModel)]="projectData.totalHandicappedSpaces"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>24-hr Store?</ion-label>
+                <ion-toggle [(ngModel)]="projectData.twentyFourHours"></ion-toggle>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Approx Age of Existing Lot (years)</ion-label>
+                <ion-input type="number" [(ngModel)]="projectData.approxAge"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label stacked>Summary of Past Pavement Repairs</ion-label>
+                <ion-textarea [(ngModel)]="projectData.pastRepairs"></ion-textarea>
+            </ion-item>
+        </ion-list>
     </div>
+
 </ion-content>
