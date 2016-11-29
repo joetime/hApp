@@ -3,28 +3,28 @@ import { Optional } from '@angular/core';
 
 export class PavingItemModel {
 
-    constructor(@Optional() initAs: number) { 
+    constructor( @Optional() initAs: number) {
 
         this.drawingObjectType = initAs;
-        
+
         // Marker defaults (0)
         if (initAs == 0) {
             console.log('initialize as marker');
-            
+
             this.name = "Marker";
             this.unit = "";
-        } 
+        }
         // Polyline defaults (1)
         else if (initAs == 1) {
             console.log('initialize as polyline');
-            
+
             this.name = "Line";
             this.unit = "LF";
-        } 
+        }
         // Polygon defaults (2)
         else if (initAs == 2) {
             console.log('initialize as polygon');
-            
+
             this.name = "Area";
             this.unit = "SF";
         }
@@ -49,5 +49,6 @@ export class PavingItemModel {
     public rating: string = "";
     public cause: any = {};
     public recommendedRepair: string = "";
-    public reference: string = ""
+    public reference: string = "";
+    public project: number;
 }

@@ -25,6 +25,7 @@ import { DrawingService } from './services/drawing.service';
 import { OptionsService } from './services/options.service';
 import { FileService } from './services/file.service';
 import { PavingItemService } from './services/paving-item.service';
+import { WalgreensProjectService } from './services/walgreens-project.service';
 
 // Models
 import { PavingItemModel } from './models/paving-item.model';
@@ -66,7 +67,10 @@ import { HomePage } from './pages/home-page/home.page';
     PavingItemModel,
     FileService,
     PavingItemService,
-    MainCommService
+    WalgreensProjectService,
+    MainCommService,
+    //MapPage,
+    //NavController
   ],
 
 })

@@ -13,7 +13,7 @@ export class Backand {
 
   // -- pavingItems ---
 
-  public getPavingItems() {
+  public getPavingItems(projectId = 0) {
     console.info('Backand getPavingItems()', name);
 
     // sort - backwards
@@ -21,11 +21,61 @@ export class Backand {
 
     // filter - ignore deleted items, this device only
     var uuid = Device.device.uuid || '3A8C8BE2-5F00-46B8-BAEE-39C5A847C8B5';
+    var filter: any[] = [
+      { fieldName: "deleted", value: false, operator: "equals" }];
+    if (projectId && projectId > 0) {
+      filter.push({ fieldName: 'project', value: projectId, operator: "in" });
+    }
+    else {
+      filter.push({ fieldName: "uuid", value: uuid, operator: "equals" });
+    }
+
+    var filterString: string = JSON.stringify(filter);
+
+    return this.http.get(this.api_url + '/1/objects/pavingItems?returnObject=true' +
+      '&filter=' + filterString +
+      '&sort=' + sort, {
+        headers: this.authHeader(),
+      })
+      .map(res => res.json())
+  }
+
+  public getWalgreensProjectZones(id) {
+
+    console.info('Backand getPavingItems()', name);
+
+    // sort - backwards
+    let sort = JSON.stringify([{ "fieldName": "id", "order": "asc" }]);
+
+    // filter - by project, "zone", ignore deleted items, this device only
+    var uuid = Device.device.uuid || '3A8C8BE2-5F00-46B8-BAEE-39C5A847C8B5';
+    var filter = JSON.stringify([
+      { fieldName: "project", value: id, operator: "in" },
+      { fieldName: "identificationType", value: "Zone", operator: "equals" },
+      { fieldName: "deleted", value: false, operator: "equals" }]);
+
+
+    return this.http.get(this.api_url + '/1/objects/pavingItems?returnObject=true' +
+      '&filter=' + filter +
+      '&sort=' + sort, {
+        headers: this.authHeader(),
+      })
+      .map(res => res.json())
+  }
+
+  public getWalgreensProjects() {
+    console.info('Backand getWalgreensProjects()', name);
+
+    // sort - backwards
+    let sort = JSON.stringify([{ "fieldName": "id", "order": "asc" }]);
+
+    // filter - ignore deleted items, this device only
+    var uuid = Device.device.uuid || 'dev';
     var filter = JSON.stringify([
       { fieldName: "deleted", value: false, operator: "equals" },
       { fieldName: "uuid", value: uuid, operator: "equals" }]);
 
-    return this.http.get(this.api_url + '/1/objects/pavingItems?returnObject=true' +
+    return this.http.get(this.api_url + '/1/objects/projects?returnObject=true' +
       '&filter=' + filter +
       '&sort=' + sort, {
         headers: this.authHeader(),
@@ -68,6 +118,41 @@ export class Backand {
 
 
 
+
+  public addWalgreensProject(item: any) {
+    console.info('Backand addWalgreensProject()')
+
+    // Add a device UUID if not already specified
+    if (item.uuid == null || item.uuid.length == 0) {
+      var uuid = Device.device.uuid || 'dev';
+      item.uuid = uuid;
+    }
+
+    let data = JSON.stringify(item);
+
+    return this.http.post(this.api_url + '/1/objects/projects?returnObject=true', data,
+      {
+        headers: this.authHeader()
+      })
+      .map(res => {
+        return res.json();
+      });
+  }
+
+  public updateWalgreensProject(item: any) {
+    console.info('Backand updateWalgreensProject()')
+
+    let data = JSON.stringify(item);
+
+    return this.http.put(this.api_url + '/1/objects/projects/' + item.id + '?returnObject=true', data,
+      {
+        headers: this.authHeader()
+      })
+      .map(res => {
+
+        return res.json();
+      });
+  }
 
 
   // --- Projects ---

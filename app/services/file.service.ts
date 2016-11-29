@@ -1,5 +1,5 @@
-import {Injectable} from '@angular/core';
-import {Http, Headers, Request, RequestOptions, RequestMethod } from '@angular/http';
+import { Injectable } from '@angular/core';
+import { Http, Headers, Request, RequestOptions, RequestMethod } from '@angular/http';
 import { LogService } from './log.service';
 import { Toast } from './toast.service'
 
@@ -23,7 +23,7 @@ export class FileService {
             this.T.toast('uploading file...' + filename);
             this.LOG.log('uploading file...', filename);
 
-            this.T.toast('uploading data...' + data);
+            //this.T.toast('uploading data...' + data);
 
             try {
 

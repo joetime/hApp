@@ -3,76 +3,185 @@
         <button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-        <ion-title>Project Data</ion-title>
+        <ion-title>Project Data [id:{{projectData ? projectData.id : '?'}}]</ion-title>
     </ion-navbar>
 </ion-header>
 
 <ion-content padding class="home-page">
-    <div padding class="text-center">
-        <h1>Walgreens Store #{{projectData.storeNumber}}</h1>
-        <ion-list>
-            <ion-item>
-                <ion-label floating>Store #</ion-label>
-                <ion-input type="text" [(ngModel)]="projectData.storeNumber"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label floating>Address</ion-label>
-                <ion-input type="text" [(ngModel)]="projectData.address"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label stacked>Survey Date</ion-label>
-                <ion-datetime displayFormat="MMMM D YYYY" [(ngModel)]="projectData.surveyDate"></ion-datetime>
-            </ion-item>
-            <ion-item>
-                <ion-label floating>Surveyor</ion-label>
-                <ion-input type="text" [(ngModel)]="projectData.surveyor"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label floating>Total Paved Area (SF)</ion-label>
-                <ion-input type="number" [(ngModel)]="projectData.totalPavedArea" (ngChange)="calculatePercentage"></ion-input>
-                <span item-right><button>Map &gt;</button></span>
-            </ion-item>
-            <ion-item>
-                <ion-label floating>Repair/Replace</ion-label>
-                <ion-select [(ngModel)]="projectData.recommendation">
-                    <ion-option value="Repair">Repair</ion-option>
-                    <ion-option value="Replace">Replace</ion-option>
-                    <ion-option value="PartialReplace">Partial Replacement</ion-option>
-                </ion-select>
-            </ion-item>
-            <ion-item>
-                <ion-label floating>Total Recommended {{recommendation}} Area (SF)</ion-label>
-                <ion-input type="number" [(ngModel)]="projectData.totalRecommendedArea" (ngChange)="calculatePercentage"></ion-input>
-                <span item-right><button>Map &gt;</button></span>
-            </ion-item>
 
-            <!--<ion-item>
-                <ion-label floating>% of Asphalt Recommended for Repair/Replacement</ion-label>
-                <ion-input type="number" [(ngModel)]="projectData.totalRecommendedPercentage"></ion-input>
-                <span item-right><button>Map &gt;</button></span>
-            </ion-item>
-            -->
-            <ion-item>
-                <ion-label floating>Total Number of Parking Spaces (inc. handicapped)</ion-label>
-                <ion-input type="number" [(ngModel)]="projectData.totalParkingSpaces"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label floating>Number of Handicapped Spaces</ion-label>
-                <ion-input type="number" [(ngModel)]="projectData.totalHandicappedSpaces"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label>24-hr Store?</ion-label>
-                <ion-toggle [(ngModel)]="projectData.twentyFourHours"></ion-toggle>
-            </ion-item>
-            <ion-item>
-                <ion-label floating>Approx Age of Existing Lot (years)</ion-label>
-                <ion-input type="number" [(ngModel)]="projectData.approxAge"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label stacked>Summary of Past Pavement Repairs</ion-label>
-                <ion-textarea [(ngModel)]="projectData.pastRepairs"></ion-textarea>
+    <!-- List of Projects -->
+
+    <div padding class="text-center" *ngIf="walgreensProjects && !projectData.id">
+        <h1>Projects</h1>
+        <ion-list>
+            <ion-item-sliding *ngFor="let item of walgreensProjects; let i = index">
+                <ion-item (click)="SelectItem_Click(item)">
+                    <span style="display:inline-block;width:18%">Store #{{item.storeNumber}}</span>
+                    <span style="display:inline-block;width:38%;">{{item.address}}</span>
+                    <span style="display:inline-block;width:14%;text-align:right;">{{item.surveyDate | date: 'dd/MM/yyyy'}}</span>
+                    <span style="display:inline-block;width:14%;text-align:right;">{{item.surveyor}}</span>
+                    <span style="display:inline-block;width:10%;text-align:right;" quiet>{{item.id}}</span>
+                </ion-item>
+                <ion-item-options>
+                    <button ion-button color="primary" (click)="Archive_Click(item)">Archive</button>
+                </ion-item-options>
+            </ion-item-sliding>
+            <ion-item (click)="NewProject_Click()">
+                <a>New project...</a>
             </ion-item>
         </ion-list>
     </div>
+
+    <!-- Page selector (Main | Zones | etc.) -->
+    <!--    Header w/ selector -->
+    <!--    PAGE - Main Project Data -->
+    <!--    PAGE - Zones -->
+
+    <ion-grid *ngIf="projectData.id">
+        <ion-row>
+            <ion-col width-100>
+                <h1>Walgreens Store #{{projectData.storeNumber}}</h1>
+                <div padding>
+                    <ion-segment [(ngModel)]="page" (click)="PageChange_Click()">
+                        <ion-segment-button value="Main">
+                            Project Data
+                        </ion-segment-button>
+                        <ion-segment-button value="Zone">
+                            Zones
+                        </ion-segment-button>
+                        <ion-segment-button value="Sitework">
+                            Sitework
+                        </ion-segment-button>
+                        <ion-segment-button value="ADA">
+                            ADA
+                        </ion-segment-button>
+                        <ion-segment-button value="Special">
+                            Spec
+                        </ion-segment-button>
+                    </ion-segment>
+                </div>
+            </ion-col>
+        </ion-row>
+
+
+        <!-- Main Project Data -->
+
+        <ion-row padding class="text-center" *ngIf="page=='Main'">
+            <ion-col>
+                <div>
+                    <ion-list>
+                        <ion-item>
+                            <ion-label floating>Store #</ion-label>
+                            <ion-input type="text" [(ngModel)]="projectData.storeNumber"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label floating>Address</ion-label>
+                            <ion-input type="text" [(ngModel)]="projectData.address"></ion-input>
+                        </ion-item>
+                        <ion-item>
+
+                            <div>Cover Photo</div>
+                            <br />
+                            <img *ngIf="projectData.coverPhoto" src="https://files.backand.io/acgo/{{projectData.coverPhoto}}" width="300px" (click)="thumbnail_Click($event, 1)"
+                                style="top: -16px;position: relative;" />
+                            <img *ngIf="!projectData.coverPhoto" src="img/placeholder100x100.png" id="image1" (click)="thumbnail_Click($event, 1)" />
+                        </ion-item>
+                        <ion-item>
+                            <ion-label stacked>Survey Date</ion-label>
+                            <ion-datetime displayFormat="MMMM D YYYY" [(ngModel)]="projectData.surveyDate"></ion-datetime>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label floating>Surveyor</ion-label>
+                            <ion-input type="text" [(ngModel)]="projectData.surveyor"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label floating>Total Paved Area (SF)</ion-label>
+                            <ion-input type="number" [(ngModel)]="projectData.totalPavedArea" (change)="calculatePercentage()"></ion-input>
+                            <span item-right><button (click)="OpenZones_Click()">Zones &gt;</button></span>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label floating>Repair/Replace</ion-label>
+                            <ion-select [(ngModel)]="projectData.recommendation">
+                                <ion-option value="Repair">Repair</ion-option>
+                                <ion-option value="Replace">Replace</ion-option>
+                                <ion-option value="Partial Replace">Partial Replacement</ion-option>
+                            </ion-select>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label floating>Total Recommended <b>{{projectData.recommendation}}</b> Area (SF)</ion-label>
+                            <ion-input type="number" [(ngModel)]="projectData.totalRecommendedArea" (change)="calculatePercentage()"></ion-input>
+                            <span item-right><button>Map &gt;</button></span>
+                        </ion-item>
+
+                        <ion-item>
+                            <ion-label floating>% of Asphalt Recommended for Repair/Replacement</ion-label>
+                            <ion-input type="number" [(ngModel)]="projectData.totalRecommendedPercentage"></ion-input>
+
+                        </ion-item>
+
+                        <ion-item>
+                            <ion-label floating>Total Number of Parking Spaces (inc. handicapped)</ion-label>
+                            <ion-input type="number" [(ngModel)]="projectData.totalParkingSpaces"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label floating>Number of Handicapped Spaces</ion-label>
+                            <ion-input type="number" [(ngModel)]="projectData.totalHandicappedSpaces"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label>24-hr Store?</ion-label>
+                            <ion-toggle [(ngModel)]="projectData.twentyFourHours"></ion-toggle>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label floating>Approx Age of Existing Lot (years)</ion-label>
+                            <ion-input type="number" [(ngModel)]="projectData.approxAge"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label stacked>Summary of Past Pavement Repairs</ion-label>
+                            <ion-textarea [(ngModel)]="projectData.pastRepairs"></ion-textarea>
+                        </ion-item>
+
+                    </ion-list>
+                </div>
+
+            </ion-col>
+        </ion-row>
+
+
+
+        <!-- Zones -->
+
+        <ion-row padding class="text-center" *ngIf="page=='Zone'">
+
+            <div>
+            </div>
+            <br />
+            <ion-list>
+                <button ion-item *ngFor="let z of zones; let i = index">
+                    <span [ngStyle]="{ 'color': '#' + z.fillcolor }"><ion-icon name="square"></ion-icon></span>
+                    <span style="display:inline-block;width:25%">{{z.type}} Zone</span>
+                    <span style="display:inline-block;width:25%">{{z.quantity | number:'1.0'}} SF</span> {{z.material}}
+                </button>
+                <ion-item>
+                    <span style="color:#ffffff"><ion-icon name="square"></ion-icon></span>
+                    <span quiet style="display:inline-block;width:25%">{{zones.length}} zones</span>
+                    <span style="display:inline-block;width:25%">{{zonesSum | number:'1.0'}} SF</span>
+                </ion-item>
+
+                <ion-item>
+
+                    <img (click)="gotoMap()" src="{{zonesStaticMapString}}" width="900px">
+                </ion-item>
+
+            </ion-list>
+
+        </ion-row>
+
+        <ion-row>
+            <button ion-button color="secondary" (click)="SaveProject_Click()">Save</button>
+            <button ion-button color="secondary" outline (click)="CloseProject_Click()">Close</button>
+        </ion-row>
+    </ion-grid>
+
+
 
 </ion-content>

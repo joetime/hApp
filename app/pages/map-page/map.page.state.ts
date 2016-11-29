@@ -12,13 +12,24 @@ export enum MapPageMode {
 @Injectable()
 export class MapPageState {
 
+    public static CurrentProjectId: number;
+    get CurrentProjectId() { return MapPageState.CurrentProjectId }
+    set CurrentProjectId(v) {
+        console.log('MapPageState - set CurrentProjectId: ' + MapPageState.CurrentProjectId)
+        MapPageState.CurrentProjectId = v;
+    }
+
     constructor() {
         console.info('MapState constructor');
 
-        // start the map page in LIST view
+        // start the map page in LIST view 
         //this.mode = MapPageMode.List;
         this.initialized = false;
     }
+
+    public filter: string; // filters the items list (all, zones, ada, etc.)
+
+    public testMessage: string = "";
 
     public initialized: boolean;
 

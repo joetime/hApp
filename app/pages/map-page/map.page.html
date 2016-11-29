@@ -3,7 +3,7 @@
 		<button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-		<ion-title>Map</ion-title>
+		<ion-title>Map {{STATE.testMessage}}</ion-title>
 	</ion-navbar>
 </ion-header>
 
@@ -14,7 +14,7 @@
 	<ion-content>
 
 
-		<!-- LIST -->
+		<!-- LIST of items -->
 
 		<ion-list *ngIf="mode == MapPageMode.List">
 			<ion-list-header>
@@ -22,7 +22,7 @@
 			</ion-list-header>
 			<ion-item>
 
-				<ion-segment [(ngModel)]="filter">
+				<ion-segment (click)="filterChanged()" [(ngModel)]="STATE.filter">
 					<ion-segment-button value="">
 						All
 					</ion-segment-button>
@@ -35,9 +35,9 @@
 					<ion-segment-button value="ADA">
 						ADA
 					</ion-segment-button>
-					<ion-segment-button value="Core Sample">
+					<!--<ion-segment-button value="Core Sample">
 						Core
-					</ion-segment-button>
+					</ion-segment-button>-->
 					<ion-segment-button value="Other">
 						Other
 					</ion-segment-button>
@@ -47,7 +47,7 @@
 			<!-- ITEMS -->
 			<ion-item-sliding *ngFor="let item of STATE.itemsList; let i = index">
 
-				<a ion-item *ngIf="!filter || filter == item.acgo.identificationType" (click)="PavingItemList_Click(item)">
+				<a ion-item *ngIf="!STATE.filter || STATE.filter == item.acgo.identificationType" (click)="PavingItemList_Click(item)">
 
 					<!-- SWITCH: icon for drawing type -->
 					<span item-left [ngSwitch]="item.acgo.drawingObjectType" style="width: 15px;font-weight:bold" [ngStyle]="{ 'color': item.acgo.color || 'black' }">
@@ -97,7 +97,7 @@
 				<div #map id="map" class="hide-on-keyboard-open">
 					<ion-spinner id="map-spinner" *ngIf="mapLoading"></ion-spinner>
 				</div>
-				<div id="mapFloat" *ngIf="FloatMessage()">{{FloatMessage()}} &nbsp;&nbsp;&nbsp; <a (click)="EditComplete_Click()">DONE</a></div>
+				<div id="mapFloat" *ngIf="_currentObject">{{floatMessage}} &nbsp;&nbsp;&nbsp; <a (click)="EditComplete_Click()">DONE</a></div>
 
 			</ion-col>
 

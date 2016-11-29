@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Component, ViewChild, ElementRef, NgZone, Injectable } from '@angular/core';
 import { Device } from 'ionic-native';
 import { NavController, NavParams, MenuController } from 'ionic-angular';
 // Services
@@ -24,6 +24,8 @@ declare var google;
     directives: [ItemForm]
 })
 export class MapPage {
+
+    public static testMessage = '';
 
     MapPageMode = MapPageMode; // allows us to use enum in template
     public mode: MapPageMode;
@@ -105,6 +107,8 @@ export class MapPage {
 
     // finish draw, don't open details
     public EditComplete_Click() {
+        console.log('EditComplete_Click')
+
         // save any changes;
         this.updatePath(this._currentObject);
         this.updateQuantity(this._currentObject);
@@ -119,6 +123,8 @@ export class MapPage {
 
     // finish draw and open details
     public EndDrawingEdit_Click() {
+        console.log('EndDrawingEdit_Click')
+
         // save any changes;
         this.updatePath(this._currentObject);
         this.updateQuantity(this._currentObject);
@@ -142,7 +148,16 @@ export class MapPage {
         }
     }
 
+    public floatMessage: string = "";
+    throttle: boolean = false;
     public FloatMessage() {
+
+        // throttled...
+        if (this.throttle) return this.floatMessage;
+
+        console.log('changing message...')
+        this.throttle = true;
+
         var msg = '';
         if (this._currentObject) {
 
@@ -160,13 +175,30 @@ export class MapPage {
                 if (this._currentObject.acgo.name) msg += ": " + this._currentObject.acgo.name;
 
                 if (this._currentObject.getPath) {
+                    console.log('trigger GetQuantity from FloatMessage');
                     var q = DrawingService.GetQuantity(this._currentObject);
                     msg += ' (' + q + ' ' + this._currentObject.acgo.unit + ')';
                 }
             }
         }
 
+        window.setTimeout(() => {
+            this.throttle = false;
+        }, 2000);
+
         return msg;
+    }
+
+    public filterChanged() {
+        console.log("FILTER CHANGED: " + this.STATE.filter);
+
+        for (let item of this.STATE.itemsList) {
+            if (!this.STATE.filter || this.STATE.filter == item.acgo.identificationType) {
+                item.setMap(this.map);
+            } else {
+                item.setMap(null);
+            }
+        }
     }
 
 
@@ -191,6 +223,9 @@ export class MapPage {
             google.maps.event.addListener(marker, 'dragend', (v) => {
                 this.updatePath(marker)
             });
+
+            // set current project ID (if applicable)
+            if (MapPageState.CurrentProjectId > 0) pavingItem.project = MapPageState.CurrentProjectId;
 
             // Save to server 
             this.PavingItemService.Save(pavingItem).then(
@@ -328,11 +363,42 @@ export class MapPage {
             });
     }
 
+    addShapeEditEvents(drawingObject) {
+        drawingObject.getPaths().forEach(function (path, index) {
+
+            google.maps.event.addListener(path, 'insert_at', function () {
+                // New point
+                this.updateQuantity(this._currentObject);
+                this.FloatMesage();
+            });
+
+            google.maps.event.addListener(path, 'remove_at', function () {
+                // Point was removed
+                this.updateQuantity(this._currentObject);
+                this.FloatMesage();
+            });
+
+            google.maps.event.addListener(path, 'set_at', function () {
+                // Point was moved
+                this.updateQuantity(this._currentObject);
+                this.FloatMesage();
+            });
+
+        });
+
+        google.maps.event.addListener(drawingObject, 'dragend', function () {
+            // Polygon was dragged
+            this.updateQuantity(this._currentObject);
+            this.FloatMesage();
+        });
+    }
+
     // Wait for ionic, then load the map
     ionViewLoaded() {
         console.info('MapPage ionicViewLoaded()')
         //if (!MapPage.initialized) 
         this.loadMap(); // load first time only??
+        this.filterChanged(); // show hide objects based on filter, which may have changed on another page
     }
 
     // decide to use last known location/zoom, or current loc of device
@@ -344,6 +410,7 @@ export class MapPage {
             this.mapLoading = true;
 
             try {
+
                 // load the last used from STATE
                 if (!forceRecenter && this.STATE.initialized) {
 
@@ -361,13 +428,14 @@ export class MapPage {
 
                     resolve(true);
                 }
-                // get current location and use that
+
                 else {
                     console.log('creating map from current location')
+                    // get current location and use that
 
                     this.gettingLocation = true;
 
-                    // load from current device location
+                    //load from current device location
                     LocationService.getCurrentPosition().then((v) => {
                         var latLng = new google.maps.LatLng(v.coords.latitude, v.coords.longitude);
                         this.mapOptions.center = latLng;
@@ -400,8 +468,11 @@ export class MapPage {
     // go to database and load all shapes, then add them to the map
     loadData() {
         console.log('MapPage loadData()');
+        console.log('MapPage loadData(): MapPageState.CurrentProjectId = ' + MapPageState.CurrentProjectId);
 
-        this.PavingItemService.Get().then((d: any[]) => {
+        var projectId = MapPageState.CurrentProjectId;
+
+        this.PavingItemService.Get(projectId).then((d: any[]) => {
 
             console.log('MapPage data recvd: ', d);
 
@@ -471,6 +542,7 @@ export class MapPage {
     }
 
     openItem(item) {
+        console.log('openItem > triggers updateQuantity')
         console.log('opening item', item);
 
         if (this._currentObject != null) {
@@ -504,7 +576,7 @@ export class MapPage {
 
 
     handleDrawingObjectClick(drawingObject, ev?: any) {
-
+        console.log('handleDrawingObjectClick > triggers updateQuantity')
         console.log('handleDrawingObjectClick:', drawingObject);
         console.log('handleDrawingObjectClick event:', ev);
 
@@ -578,7 +650,7 @@ export class MapPage {
     }
 
     updateQuantity(drawingObject) {
-        console.info('updateQuantity', drawingObject);
+        console.info('trigger GetQuantity from updateQuantity', drawingObject);
         var quantity = DrawingService.GetQuantity(drawingObject);
 
         this.PavingItemService.Save({ id: drawingObject.acgo.id, quantity: quantity }).then((res) => {

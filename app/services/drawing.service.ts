@@ -177,12 +177,18 @@ export class DrawingService {
         var bounds = new google.maps.LatLngBounds();
         list.forEach(drawingObject => {
 
-            if (drawingObject.getPath) {
-                var path = drawingObject.getPath();
-                for (var i = 0; i < path.getLength(); i++)
-                    bounds.extend(path.getAt(i));
-            } else {
-                bounds.extend(drawingObject.getPosition());
+            // filter out items not currently attached to the map
+            if (drawingObject.getMap() != null) {
+
+                if (drawingObject.getPath) {
+                    // for shapes
+                    var path = drawingObject.getPath();
+                    for (var i = 0; i < path.getLength(); i++)
+                        bounds.extend(path.getAt(i));
+                } else {
+                    // for markers
+                    bounds.extend(drawingObject.getPosition());
+                }
             }
         });
         console.log('> fitting Bounds:', bounds);
