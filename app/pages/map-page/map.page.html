@@ -120,7 +120,7 @@
                         <ion-icon name="navigate" *ngIf="!gettingLocation"></ion-icon>
                         <ion-spinner *ngIf="gettingLocation"></ion-spinner>
                     </button>
-					<button outline (click)="Reframe_Click()">
+					<button outline (click)="Reframe_Click()" [disabled]="DisableReframe()">
                         <ion-icon name="expand"></ion-icon>
                     </button>
 

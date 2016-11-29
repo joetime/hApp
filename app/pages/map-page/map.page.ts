@@ -83,9 +83,11 @@ export class MapPage {
     }
 
     // Reframe to show all drawingObjects
+    public DisableReframe() {
+        return this.STATE.itemsList.length == 0;
+    }
     public Reframe_Click() {
         console.info('MapPage Reframe_Click()')
-
         DrawingService.CenterOnDrawingObjects(this.map, this.STATE.itemsList);
     }
 

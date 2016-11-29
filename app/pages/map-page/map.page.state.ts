@@ -12,6 +12,7 @@ export enum MapPageMode {
 @Injectable()
 export class MapPageState {
 
+    // Current Project Id (eg 4)
     public static CurrentProjectId: number;
     get CurrentProjectId() { return MapPageState.CurrentProjectId }
     set CurrentProjectId(v) {
