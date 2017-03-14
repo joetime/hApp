@@ -281,6 +281,8 @@ export class MapPage {
 
             let pavingItem = new PavingItemModel(1);
 
+            // set current project ID (if applicable)
+            if (MapPageState.CurrentProjectId > 0) pavingItem.project = MapPageState.CurrentProjectId;
 
             // Save to server 
             this.PavingItemService.Save(pavingItem).then((res) => {
@@ -338,6 +340,8 @@ export class MapPage {
         // attach pavingItem data
         let pavingItem = new PavingItemModel(2);
 
+        // set current project ID (if applicable)
+        if (MapPageState.CurrentProjectId > 0) pavingItem.project = MapPageState.CurrentProjectId;
 
         this.PavingItemService.Save(pavingItem).then((res) => {
 
@@ -505,7 +509,7 @@ export class MapPage {
                 this.STATE.itemsList.push(drawingObject);
             });
 
-        }).catch((err) => { 'error getting data', err });
+        }).catch((err) => { console.log('error getting data', err ); });
     }
 
 
